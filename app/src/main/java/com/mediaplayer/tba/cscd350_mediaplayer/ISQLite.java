@@ -23,6 +23,7 @@ public interface ISQLite {
     */
 
     // adding database entries
+    void populateDatabase(MediaFile[] foundFiles);
 
     // add song to database
     boolean addMediaFile(MediaFile mediaFile);
@@ -39,10 +40,10 @@ public interface ISQLite {
 
     // get list of albums by an artist
     String[] getAlbums(String artist) ;
+
     // get list of songs in an album
     SongData[] getSongs(String album);
-    // get the mediaFile information for a given list of songs
-    MediaFile getMediaFile(String title);
+
     // get all the MediaFiles
     MediaFile[] getMediaFiles();
 

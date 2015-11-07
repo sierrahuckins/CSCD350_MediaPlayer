@@ -7,6 +7,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * Created by Andrew Macy on 11/1/2015.
  * Class that creates and accesses our Media Database
@@ -39,6 +42,12 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
 
     @Override
+    public void populateDatabase(MediaFile[] foundFiles) {
+        for(MediaFile file: foundFiles)
+            addMediaFile(file);
+    }
+
+    @Override
     public boolean addMediaFile(MediaFile mediaFile) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -47,7 +56,11 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         contentValues.put(ARTIST, mediaFile.getArtist());
         contentValues.put(ALBUM, mediaFile.getAlbum());
         contentValues.put(GENRE, mediaFile.getGenre());
-        contentValues.put(theURI, mediaFile.getUri().getPath());
+
+        if(mediaFile.getUri() != null)
+            contentValues.put(theURI, mediaFile.getUri().toString());
+        else
+            return false;
 
         long result = db.insert(TABLE_NAME, null, contentValues);
 
@@ -64,6 +77,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
         return constructStringResults(results);
     }
+
     // get list of albums
     @Override
     public String[] getAlbums(){
@@ -109,18 +123,24 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     }
 
     @Override
-    public MediaFile getMediaFile(String title) {
-        return null;
-    }
-
-    @Override
     public MediaFile[] getMediaFiles() {
-        return new MediaFile[0];
+        String[] select = {"*"};
+        String where = "";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
     }
 
     @Override
     public MediaFile[] search(String search) {
-        return new MediaFile[0];
+        String[] select = {"*"};
+        String where = "Concat(title, '', artist, '', album, ' '," +
+                " genre) like \"%"+ search +"%\"";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
     }
 
     private Cursor queryLibrary(String[] select, String where) {
@@ -137,6 +157,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     private String buildSelectClause(String[] items) {
         String clause = "";
+
         if(items.length >= 1) {
             clause += items[0];
             for(int i = 1; i < items.length; i++)
@@ -157,6 +178,30 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         int i = 0;
         while(results.moveToNext()){
             data[i] = results.getString(0);
+        }
+
+        return data;
+    }
+
+    private MediaFile[] constructMediaFileResults(Cursor results){
+        MediaFile[] data = new MediaFile[results.getCount()];
+
+        if(results.getCount() == 0)
+            return data;
+
+        int i = 0;
+        while(results.moveToNext()){
+            URI tmpURI;
+
+            try {
+                tmpURI = new URI(results.getString(4));
+
+                data[i] = new MediaFile(results.getString(0), results.getString(1),
+                        results.getString(2),results.getString(3),tmpURI );
+
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         }
 
         return data;
