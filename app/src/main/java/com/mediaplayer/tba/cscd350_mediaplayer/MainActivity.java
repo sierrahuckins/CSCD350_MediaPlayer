@@ -162,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
         // if the drawer is open, hide the button settings
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
+        if (savedInstanceState == null) {
+
+        }
     }
 
     @Override
