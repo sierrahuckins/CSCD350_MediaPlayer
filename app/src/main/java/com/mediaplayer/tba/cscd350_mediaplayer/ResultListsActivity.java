@@ -45,24 +45,24 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v) {
-        List<String> resultsList;
+        List<String> resultsList = null;
 
         switch(v.getId()) {
             case R.id.btnArtists:
                 //retrieve artists from database
-                resultsList =
+//                resultsList =
                 break;
             case R.id.btnAlbums:
                 //retrieve albums from database
-                resultsList =
+//                resultsList =
                 break;
             case R.id.btnPlaylists:
                 //retrieve playlists from database
-                resultsList =
+//                resultsList =
                 break;
             case R.id.btnSongs:
                 //retrieve songs from database
-                resultsList =
+//                resultsList =
                 break;
         }
 

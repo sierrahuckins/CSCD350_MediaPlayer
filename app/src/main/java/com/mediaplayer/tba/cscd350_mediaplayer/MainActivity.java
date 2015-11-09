@@ -1,6 +1,5 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,13 +8,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,27 +28,12 @@ public class MainActivity extends AppCompatActivity {
     ListView drawerLayoutListView;
     ActionBarDrawerToggle actionBarDrawerToggle;
 
-    // media player
-    MediaPlayer mediaPlayer;
-
-    // buttons
-    Button playPauseButton;
-    boolean playPauseButtonState = false;
-    String playPauseButtonTextPlaying = "Play";
-    String playPauseButtonTextPaused = "Pause";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // TODO: 11/5/2015 put this in a method that Sierra can call from her menu, or by passing an intent
-        // media player and attach it to a file in the resource directory
-        mediaPlayer = MediaPlayer.create(this, R.raw.bits);
-        // start media playback
-        mediaPlayer.start();
 
         // get the drawer layout
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -63,18 +51,11 @@ public class MainActivity extends AppCompatActivity {
         // set the drawer adapter on the drawer
         drawerLayoutListView.setAdapter(drawerAdapter);
 
-        // get the play pause button from the activity
-        playPauseButton = (Button) findViewById(R.id.playPauseButton);
-
         // create item click listener
         ListView.OnItemClickListener onItemClickListener = new ListView.OnItemClickListener() {
             // onClick for drawerLayout listView items
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                // change all the drawer menu item text views
-                TextView textView = (TextView) findViewById(R.id.drawer_item_text_view);
-                textView.setText("Click");
 
                 // close the drawer layout once an item is clicked
                 drawerLayout.closeDrawers();
@@ -82,29 +63,6 @@ public class MainActivity extends AppCompatActivity {
         };
         // set this as an onClick listener for the drawer items
         drawerLayoutListView.setOnItemClickListener(onItemClickListener);
-
-        // button onClickListener
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // get the button from the view
-                Button button = (Button) findViewById(R.id.playPauseButton);
-                if(mediaPlayer != null) {
-                    if(mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                    }
-                    else {
-                        mediaPlayer.start();
-                    }
-                    // change the text on the button
-                    button.setText(mediaPlayer.isPlaying() ? playPauseButtonTextPaused : playPauseButtonTextPlaying);
-                }
-
-            }
-        };
-        // set onClickListener on button
-        playPauseButton.setOnClickListener(onClickListener);
 
         // this is the animaged toggle button which opens and closes the drawer
         // set action bar drawer toggle
@@ -143,18 +101,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // play all media files in an array of media files
-    /*
-     * this should set a listener on the mediaPlayer, and whenever one of the mediaFiles ends, it should start the next one.
-     * if we are set on repeat, we should just replay the current media file
-     * if we are set to repeat all, we should replay the list of mediaFiles
-     */
-    public void playMediaFiles(MediaFile[] mediaFiles) {
-
-
-
-    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
@@ -162,9 +108,6 @@ public class MainActivity extends AppCompatActivity {
         // if the drawer is open, hide the button settings
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
-        if (savedInstanceState == null) {
-
-        }
     }
 
     @Override
