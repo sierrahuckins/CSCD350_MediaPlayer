@@ -45,7 +45,7 @@ public interface SQLightInterface {
     // get list of songs in an album
     String[] getSongs(String album);
     // get the mediaFile information for a given list of songs
-    MediaFile getMediaFile(String title);
+    MediaFile getMediaFile(String key);
     // get all the MediaFiles
     MediaFile[] getMediaFiles();
 
