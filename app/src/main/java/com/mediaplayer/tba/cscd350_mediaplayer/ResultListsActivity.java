@@ -23,6 +23,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     ListView listResults = (ListView)findViewById(R.id.listResults);
     String[] currentList = {"Choose A Category"};
     ArrayAdapter<String> adapter;
+    LibraryDatabase db = new LibraryDatabase(this);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,28 +46,28 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v) {
-        List<String> resultsList;
+        String[] resultsList = db.getArtists();
 
         switch(v.getId()) {
             case R.id.btnArtists:
                 //retrieve artists from database
-                resultsList =
+                resultsList = db.getArtists();
                 break;
             case R.id.btnAlbums:
                 //retrieve albums from database
-                resultsList =
+                resultsList = db.getAlbums();
                 break;
             case R.id.btnPlaylists:
                 //retrieve playlists from database
-                resultsList =
+                //resultsList = db.getPlaylists();
                 break;
             case R.id.btnSongs:
                 //retrieve songs from database
-                resultsList =
+                //resultsList = db.getSongs();
                 break;
         }
 
-        currentList = new String[resultsList.size()];
+        currentList = new String[resultsList.length];
         int i = 0;
 
         for(String s: resultsList) {
