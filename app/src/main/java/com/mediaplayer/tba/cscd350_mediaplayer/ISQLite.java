@@ -1,12 +1,11 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 /**
- * Created by Bruce Emehiser on 11/2/2015.
- *
- * Interface used to create, read, and write an SQLight database
+ * Created by Andrew Macy on 11/7/2015.
+ * Interface for interacting with database
+ * Changed interface name.
  */
-public interface SQLightInterface {
-
+public interface ISQLite {
     /*
     // create database
     // this should be automatically because we know what tables we want
@@ -24,11 +23,10 @@ public interface SQLightInterface {
     */
 
     // adding database entries
+    void populateDatabase(MediaFile[] foundFiles);
 
-    // add artist to database
-    void addArtist(Artist artist);
     // add song to database
-    void addMediaFile(MediaFile mediaFile);
+    boolean addMediaFile(MediaFile mediaFile);
 
 
     // querying database
@@ -38,14 +36,20 @@ public interface SQLightInterface {
     // get list of albums
     String[] getAlbums();
     // get list of songs
-    String[] getSongs();
+    SongData[] getSongs();
 
     // get list of albums by an artist
     String[] getAlbums(String artist) ;
+
     // get list of songs in an album
+<<<<<<< HEAD:app/src/main/java/com/mediaplayer/tba/cscd350_mediaplayer/SQLightInterface.java
     String[] getSongs(String album);
     // get the mediaFile information for a given list of songs
     MediaFile getMediaFile(String key);
+=======
+    SongData[] getSongs(String album);
+
+>>>>>>> origin/dmacy:app/src/main/java/com/mediaplayer/tba/cscd350_mediaplayer/ISQLite.java
     // get all the MediaFiles
     MediaFile[] getMediaFiles();
 
@@ -56,8 +60,4 @@ public interface SQLightInterface {
      * This will search all of the fields, Artist, Album, Title, and Genre
      */
     MediaFile[] search(String search);
-
-
-
-
 }

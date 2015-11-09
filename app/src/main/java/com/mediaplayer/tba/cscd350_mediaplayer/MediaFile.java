@@ -4,7 +4,7 @@ import java.net.URI;
 
 /**
  * Created by Bruce Emehiser on 11/2/2015.
- *
+ * Editted Getters on 11/7/2015 to account for null strings - Andrew Macy
  * Wrapper for data which describes a media file.
  */
 public class MediaFile {
@@ -24,19 +24,27 @@ public class MediaFile {
     }
 
     public String getArtist() {
-        return artist;
+        if(artist != null)
+            return artist;
+        return "";
     }
 
     public String getAlbum() {
-        return album;
+        if(album != null)
+            return album;
+        return "";
     }
 
     public String getTitle() {
-        return title;
+        if(title != null)
+            return title;
+        return "";
     }
 
     public String getGenre() {
-        return genre;
+        if( genre != null )
+            return genre;
+        return "";
     }
 
     public URI getUri() {
