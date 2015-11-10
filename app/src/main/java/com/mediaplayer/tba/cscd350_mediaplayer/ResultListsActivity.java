@@ -2,15 +2,13 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.sql.ResultSet;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -26,7 +24,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
     ListView listResults;
 
-    String[] currentList;
+    ArrayList<String> currentList; // has to be an arraylist because the adapter needs a dynamic list
     ArrayAdapter<String> adapter;
     LibraryDatabase db = new LibraryDatabase(this);
 
@@ -34,7 +32,8 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_resultslistsactivity);
 
-        currentList = new String[] {"Choose A Category"};
+        currentList = new ArrayList<>();
+        currentList.add("Choose A Category");
 
         artistsBtn = (Button)findViewById(R.id.btnArtists);
         albumsBtn = (Button)findViewById(R.id.btnAlbums);
@@ -51,7 +50,8 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         if (savedInstanceState != null) {
             String[] temp = savedInstanceState.getStringArray("currentList");
             if(temp != null) {
-                currentList = temp;
+                currentList = new ArrayList<>();
+                currentList.addAll(Arrays.asList(temp));
             }
         }
 
@@ -63,7 +63,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v) {
-        String[] resultsList = db.getArtists();
+        String[] resultsList = null;
 
         switch(v.getId()) {
             case R.id.btnArtists:
@@ -80,18 +80,17 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.btnSongs:
                 //retrieve songs from database
-                //resultsList = db.getSongs();
+//                resultsList = db.getSongs();
                 break;
         }
 
-        currentList = new String[resultsList.length];
-        int i = 0;
-
-        for(String s: resultsList) {
-            currentList[i] = s;
-            i++;
+        if(resultsList != null) {
+            currentList = new ArrayList<>();
+            currentList.addAll(Arrays.asList(resultsList));
         }
 
+        adapter.clear();
+        adapter.addAll(currentList);
         adapter.notifyDataSetChanged();
     }
 
@@ -99,6 +98,6 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putStringArray("currentList",currentList);
+        outState.putStringArray("currentList",currentList.toArray(new String[currentList.size()]));
     }
 }

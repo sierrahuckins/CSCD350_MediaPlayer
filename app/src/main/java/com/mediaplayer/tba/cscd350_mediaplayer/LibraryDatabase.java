@@ -6,9 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+import android.net.Uri;
 
 /**
  * Created by Andrew Macy on 11/1/2015.
@@ -178,6 +176,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         int i = 0;
         while(results.moveToNext()){
             data[i] = results.getString(0);
+            i ++;
         }
 
         return data;
@@ -191,17 +190,13 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
         int i = 0;
         while(results.moveToNext()){
-            URI tmpURI;
+            Uri tmpURI;
 
-            try {
-                tmpURI = new URI(results.getString(4));
+            tmpURI = Uri.parse(results.getString(4));
 
-                data[i] = new MediaFile(results.getString(0), results.getString(1),
-                        results.getString(2),results.getString(3),tmpURI );
-
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            data[i] = new MediaFile(results.getString(0), results.getString(1),
+                    results.getString(2),results.getString(3), tmpURI);
+            i ++;
         }
 
         return data;
@@ -216,6 +211,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         int i = 0;
         while(results.moveToNext()){
             data[i] = new SongData(results.getString(0), results.getString(1));
+            i ++;
         }
 
         return data;
