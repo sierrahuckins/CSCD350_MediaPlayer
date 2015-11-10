@@ -42,14 +42,7 @@ public interface ISQLite {
     String[] getAlbums(String artist) ;
 
     // get list of songs in an album
-<<<<<<< HEAD:app/src/main/java/com/mediaplayer/tba/cscd350_mediaplayer/SQLightInterface.java
-    String[] getSongs(String album);
-    // get the mediaFile information for a given list of songs
-    MediaFile getMediaFile(String key);
-=======
     SongData[] getSongs(String album);
-
->>>>>>> origin/dmacy:app/src/main/java/com/mediaplayer/tba/cscd350_mediaplayer/ISQLite.java
     // get all the MediaFiles
     MediaFile[] getMediaFiles();
 

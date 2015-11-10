@@ -1,5 +1,6 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     ListView drawerLayoutListView;
     ActionBarDrawerToggle actionBarDrawerToggle;
 
+    private static final int DEFUALT_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
         // add drawer item to drawer item list view
         // create array
-        DrawerItem[] drawerItems = new DrawerItem[1];
+        DrawerItem[] drawerItems = new DrawerItem[2];
         // populate array
-        drawerItems[0] = new DrawerItem(R.drawable.check_box_icon, "Check");
+        drawerItems[0] = new DrawerItem(R.drawable.headphones, "Library");
+        drawerItems[1] = new DrawerItem(android.R.drawable.ic_search_category_default, "Search");
 
-        // create drawer adapter with the list of drawer items
+                // create drawer adapter with the list of drawer items
         drawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
         // set the drawer adapter on the drawer
         drawerLayoutListView.setAdapter(drawerAdapter);
@@ -56,6 +60,13 @@ public class MainActivity extends AppCompatActivity {
             // onClick for drawerLayout listView items
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                switch (position) {
+                    case 0:
+                        Intent intent = new Intent(view.getContext(), ResultListsActivity.class);
+                        startActivity(intent);
+                        break;
+                }
 
                 // close the drawer layout once an item is clicked
                 drawerLayout.closeDrawers();
