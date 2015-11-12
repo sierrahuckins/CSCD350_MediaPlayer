@@ -22,27 +22,6 @@ import java.util.*;
  */
 public class FilesSearch implements FileCrawler {
 
-//    @Override
-//    public Uri[] scanFileSystem(String extension) {
-//
-//        File file = new File(extension);
-//        int i = 0;
-//        URI[] uri = new URI[i];
-//
-//        File[] files = file.listFiles();
-//        for(File fil : files)
-//        {
-//            if(fil.isFile())
-//            {
-//                filesm = fil.getName();
-//                uri[i] = (URI.create(filesm));
-//                i++;
-//            }
-//        }
-//        return uri;
-//
-//    }
-
     /**
      * Created by Kyle on 11/4/2015.
      * Updated by Bruce on 11/9/2015 to use ContentResolver and search for all "audio" files
@@ -61,7 +40,6 @@ public class FilesSearch implements FileCrawler {
 
         // array list to contain the entries we select to use
         ArrayList<MediaFile> builderArray = new ArrayList<>();
-        Uri externalMediaUri = Uri.parse("content://media/external/audio/media");
 
         if (cursor == null) {
             // problem with getting the cursor

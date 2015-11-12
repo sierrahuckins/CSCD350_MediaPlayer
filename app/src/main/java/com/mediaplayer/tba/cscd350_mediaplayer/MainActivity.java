@@ -1,6 +1,7 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -44,13 +45,19 @@ public class MainActivity extends AppCompatActivity {
             database = new LibraryDatabase(this);
 
         // call the file search to search for files in the system
-        // TODO: 11/9/2015 launch fileSearch and populateDatabase with an async task so that it doesn't make our gui hang
-        FilesSearch filesSearch = new FilesSearch();
-        MediaFile[] mediaFiles = filesSearch.scanFileSystem(this);
+        Runnable fileSearchAndAddThread = new Runnable() {
+            @Override
+            public void run() {
+                FilesSearch filesSearch = new FilesSearch();
+                MediaFile[] mediaFiles = filesSearch.scanFileSystem(getApplicationContext());
 
-        // add all the mediafiles we just found to our database
-        // TODO: 11/9/2015 make this run on first launch, on a storage isChanged listener on the ContentResolver, or when the users says to
-//        database.populateDatabase(mediaFiles); // if this runs every launch, it will produce a zillion errors because of database collision
+                // add all the mediafiles we just found to our database
+                // TODO: 11/9/2015 make this run on first launch, on a storage isChanged listener on the ContentResolver, or when the users says to
+                database.populateDatabase(mediaFiles); // if this runs every launch, it will produce a zillion errors because of database collision
+            }
+        };
+        // run the thread
+        fileSearchAndAddThread.run();
 
 //        // create new mediaPlayer
 //        MediaPlayer mediaPlayer = new MediaPlayer();
