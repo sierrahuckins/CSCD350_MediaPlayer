@@ -66,11 +66,12 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
             return false;
 
         long result = -1;
+
         try {
             result = db.insert(TABLE_NAME, null, contentValues);
         }
         catch(SQLiteConstraintException e){
-            return false; //repeat result
+            return false; //item already in database
         }
 
         return result != -1;
@@ -91,6 +92,26 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         long result = db.insert(PLAYLIST_TABLE, null, contentValues);
 
         return result != -1;
+    }
+
+    @Override
+    public MediaFile getMediaFile(String uri) {
+        String[] select = {"*"};
+        String where = theURI + " = " + uri;
+
+        Cursor results = queryLibrary(select, where);
+
+        MediaFile item = new MediaFile();
+
+        item.setTitle(results.getString(0));
+        item.setArtist(results.getString(1));
+        item.setAlbum(results.getString(2));
+        item.setGenre(results.getString(3));
+
+        Uri tmpURI = Uri.parse(results.getString(4));
+        item.setUri(tmpURI);
+
+        return item;
     }
 
     @Override
@@ -117,7 +138,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of albums
     @Override
     public String[] getAlbums(){
-        String[] select = {"DISTINCT" + ALBUM};
+        String[] select = {"DISTINCT " + ALBUM};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
@@ -159,7 +180,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of albums by an artist
     @Override
     public String[] getAlbums(String artist){
-        String[] select = {ALBUM};
+        String[] select = {"DISTINCT " + ALBUM};
         String where = ARTIST + " = " + artist ;
 
         Cursor results = queryLibrary(select, where);
@@ -184,6 +205,36 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         String where = "";
 
         Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromAlbum(String album) {
+        String[] select = {"*"};
+        String where = ALBUM + " =  " + album;
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromArtist(String artist) {
+        String[] select = {"*"};
+        String where = ARTIST + " = " + artist;
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromPlaylist(String playlist) {
+        String[] select = {SONG, ARTIST, ALBUM, GENRE, theURI};
+        String where = PLAYLIST + " = " + playlist;
+
+        Cursor results = queryPlaylist(select, where);
 
         return constructMediaFileResults(results);
     }

@@ -15,6 +15,14 @@ public class MediaFile {
     private String genre;
     private Uri uri;
 
+    public MediaFile(){
+        this.artist = null;
+        this.album = null;
+        this.title = null;
+        this.genre = null;
+        this.uri = null;
+    }
+
     public MediaFile(String artist, String album, String title, String genre, Uri uri) {
         this.artist = artist;
         this.album = album;
