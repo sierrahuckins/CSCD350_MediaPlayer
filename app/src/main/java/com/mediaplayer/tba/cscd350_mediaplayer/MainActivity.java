@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.provider.MediaStore;
+import android.view.MotionEvent;
 import android.widget.MediaController;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +23,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -144,13 +148,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
         if(requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            // get the array of media files from the intent
+            Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
+            nowPlaying = (ArrayList) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
 
-            // TODO: 11/15/2015 process the request result
+            // star the media player playing
+            play();
         }
-
     }
 
     private void play() {
@@ -178,14 +186,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playNext() {
-        // check for null player
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
+        // check for null now playing list
+        if(nowPlaying == null) {
+            return;
         }
         // check for no next items
         if(nowPlaying.size() == 0) {
             // no items to play
             return;
+        }
+        // check for null player
+        if(mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
         }
         // get next media file and remove it from the now playing list
         MediaFile mediaFile = nowPlaying.get(0);

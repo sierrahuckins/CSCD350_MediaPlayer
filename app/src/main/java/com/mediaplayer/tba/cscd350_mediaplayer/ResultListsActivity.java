@@ -2,6 +2,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,11 +35,10 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
     //holds the array list of MediaFiles that will be returned to MainActivity
     private ArrayList<MediaFile> mediaFiles;
-    public static final String FILES = "files";
 
     //holds the current list of strings that is being displayed
     private String[] currentList;
-    private enum display {ARTISTS, ALBUMS, PLAYLISTS, SONGS, GENRES};
+    private enum display {ARTISTS, ALBUMS, PLAYLISTS, SONGS, GENRES}
     private display currentDisplay;
 
     private ArrayAdapter<String> adapter;
@@ -99,14 +99,17 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.btnPlaylists:
                 //retrieve playlists from database
-                currentList = db.getPlaylists();
+                // TODO: 11/15/2015 uncomment this when database is workin
+//                currentList = db.getPlaylists();
                 break;
             case R.id.btnGenre:
                 //retrieve genres from database
-                currentList = db.getGenres();
+                // TODO: 11/15/2015 uncomment this when database is workin
+//                currentList = db.getGenres();
             case R.id.btnSongs:
                 //retrieve songs from database
-                currentList = db.getSongTitles();
+                // TODO: 11/15/2015 uncomment this when database is workin
+//                currentList = db.getSongTitles();
                 break;
 
         }
@@ -137,23 +140,27 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         //or every other display we will get a list of MediaFiles from database
         //to be returned to MainActivity
         else if (currentDisplay == display.ALBUMS) {
-            mediaFiles = db.getAlbumData(clicked);
+            // TODO: 11/15/2015 uncomment this when database is workin
+//            mediaFiles = db.getAlbumData(clicked);
         }
         else if (currentDisplay == display.PLAYLISTS) {
-            mediaFiles = db.getPlaylistData(clicked);
+            // TODO: 11/15/2015 uncomment this when database is workin
+//            mediaFiles = db.getPlaylistData(clicked);
         }
         else if (currentDisplay == display.ALBUMS) {
-            mediaFiles = db.getAlbumData(clicked);
+            // TODO: 11/15/2015 uncomment this when database is workin
+//            mediaFiles = db.getAlbumData(clicked);
         }
         else {
-            mediaFiles = db.getSongsData(position);
+            // TODO: 11/15/2015 uncomment this when database is working
+//            mediaFiles = db.getSongsData(position);
         }
 
-        //bundle the MediaFiles and return them to MainActivity as intent
+        // bundle the MediaFiles and return them to MainActivity as intent
         Intent intent = getIntent();
-        Bundle returnedFiles = new Bundle;
-        returnedFiles.putParcelableArrayList(FILES,mediaFiles);
-        intent.putExtra(FILES,returnedFiles);
+        Bundle returnedFiles = new Bundle();
+        returnedFiles.putSerializable(RESULT_LIST_ACTIVITY_RESPONSE_KEY, mediaFiles);
+        intent.putExtra(RESULT_LIST_ACTIVITY_RESPONSE_KEY, returnedFiles);
     }
 
     @Override
