@@ -6,8 +6,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
+import android.widget.Button;
 import android.widget.MediaController;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -26,8 +28,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.logging.LogRecord;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener {
 
     // navigation drawer
     DrawerLayout drawerLayout;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     // media player
     MediaPlayer mediaPlayer;
     MediaController mediaController;
+    Handler mediaControllerHandler;
     ArrayList<MediaFile> nowPlaying;
 
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
@@ -71,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         };
         // run the thread
         fileSearchAndAddThread.run();
-
 
         // get the drawer layout
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -119,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
                 setTitle(getString(R.string.drawer_closed));
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
-
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -145,6 +148,33 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        // initialize now playing
+        nowPlaying = new ArrayList<>();
+
+        // TODO: 11/15/2015 get the now_playing view and attach it to the now playing playlist
+        // TODO: 11/15/2015 update the now_playing view when the currently playing song changes
+
+        // initialize the media controller handler
+        mediaControllerHandler = new Handler();
+
+        // TODO: 11/15/2015 testing playback
+        Button button = (Button) findViewById(R.id.play_button);
+        button.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        // TODO: 11/15/2015 this is just a test to see if the media player and controller work
+        // fill the now playing form the database
+        LibraryDatabase db = new LibraryDatabase(this);
+        MediaFile[] mediaFiles = db.getMediaFiles();
+        if(mediaFiles != null) {
+            nowPlaying.addAll(Arrays.asList(mediaFiles));
+        }
+        // call to play first item in database
+        playNext();
     }
 
     @Override
@@ -157,12 +187,12 @@ public class MainActivity extends AppCompatActivity {
             nowPlaying = (ArrayList) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
 
             // star the media player playing
-            play();
+            start();
         }
     }
 
-    private void play() {
-
+    @Override
+    public void start() {
         // check for null
         if(mediaPlayer == null) {
             // play next file in playlist
@@ -174,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void pause() {
+    public void pause() {
         // check for null
         if(mediaPlayer == null) {
             return;
@@ -183,6 +213,80 @@ public class MainActivity extends AppCompatActivity {
         if(mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
+    }
+
+    public void stop() {
+        mediaController.hide();
+        mediaPlayer.stop();
+        mediaPlayer.release();
+    }
+
+    @Override
+    public int getDuration() {
+        if(mediaPlayer != null) {
+            return mediaPlayer.getDuration();
+        }
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if(mediaPlayer != null) {
+            return mediaPlayer.getCurrentPosition();
+        }
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int pos) {
+        if(mediaPlayer != null) {
+            mediaPlayer.seekTo(pos);
+        }
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if(mediaPlayer != null) {
+            return mediaPlayer.isPlaying();
+        }
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        if(mediaPlayer != null) {
+            return mediaPlayer.isPlaying();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    /**
+     * Get the audio session id for the player used by this VideoView. This can be used to
+     * apply audio effects to the audio track of a video.
+     *
+     * @return The audio session, or 0 if there was an error.
+     */
+    @Override
+    public int getAudioSessionId() {
+        if(mediaPlayer != null) {
+            return mediaPlayer.getAudioSessionId();
+        }
+        return 0;
     }
 
     private void playNext() {
@@ -198,20 +302,39 @@ public class MainActivity extends AppCompatActivity {
         // check for null player
         if(mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnPreparedListener(this);
+        }
+        if(mediaController == null) {
+            mediaController = new MediaController(this) {
+                @Override
+                public void hide() {
+                    this.show();
+                }
+            };
         }
         // get next media file and remove it from the now playing list
         MediaFile mediaFile = nowPlaying.get(0);
         nowPlaying.remove(0);
 
-        // prepare the media player and start it
+        // reset media player, prepare the media player and start it
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
+            mediaPlayer.reset();
             mediaPlayer.setDataSource(this, mediaFile.getUri());
-            mediaPlayer.prepareAsync();
+            mediaPlayer.prepare();
         } catch (IOException e) {
             Log.e("IOException", "Cannot play media file," + mediaFile.toString() + " Invalid Uri (or something like that)");
             return;
         }
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                // reset the media player
+                mediaPlayer.reset();
+                // start the next media file
+                playNext();
+            }
+        });
         mediaPlayer.start();
     }
 
@@ -244,5 +367,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /**
+     * Called when the media file is ready for playback.
+     *
+     * @param mp the MediaPlayer that is ready for playback
+     */
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+
+        // se the media player to be controlled by the media controller
+        mediaController.setMediaPlayer(this);
+        // attach the media controller to the media controller widget
+        mediaController.setAnchorView(findViewById(R.id.media_controller));
+
+        mediaControllerHandler.post(new Runnable() {
+            public void run() {
+                mediaController.setEnabled(true);
+                mediaController.show();
+            }
+        });
+
     }
 }

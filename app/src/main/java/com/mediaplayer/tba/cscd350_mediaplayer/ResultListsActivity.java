@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -37,7 +38,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     private ArrayList<MediaFile> mediaFiles;
 
     //holds the current list of strings that is being displayed
-    private String[] currentList;
+    private ArrayList<String> currentList;
     private enum display {ARTISTS, ALBUMS, PLAYLISTS, SONGS, GENRES}
     private display currentDisplay;
 
@@ -47,6 +48,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     // activity intent request response key
     public static final String RESULT_LIST_ACTIVITY_RESPONSE_KEY = "response_key";
 
+    @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_resultslistsactivity);
@@ -65,17 +67,20 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         playlistsBtn.setOnClickListener(this);
         genreBtn.setOnClickListener(this);
         songsBtn.setOnClickListener(this);
-        listResults.setOnClickListener(this);
+        listResults.setOnItemClickListener(this);
+
+        // create current list
+        currentList = new ArrayList<>();
 
         //update list if there is saved instance data from before
         if (savedInstanceState != null) {
-            String[] temp = savedInstanceState.getStringArray("currentList");
+            ArrayList<String> temp = (ArrayList<String>) savedInstanceState.getSerializable("currentList");
             if(temp != null) {
-                currentList = temp;
+                currentList.addAll(temp);
             }
-            else {
-                currentList = new String[] {"Choose A Category"};
-            }
+        }
+        else {
+            currentList.addAll(Arrays.asList(db.getArtists()));
         }
 
         // get new adapter and pass it a list item layout and the text view in the list item
@@ -88,35 +93,36 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
 
+        String[] tempList = new String[0];
         switch(v.getId()) {
             case R.id.btnArtists:
                 //retrieve artists from database
-                currentList = db.getArtists();
+                tempList = db.getArtists();
                 break;
             case R.id.btnAlbums:
                 //retrieve albums from database
-                currentList = db.getAlbums();
+                tempList = db.getAlbums();
                 break;
             case R.id.btnPlaylists:
                 //retrieve playlists from database
                 // TODO: 11/15/2015 uncomment this when database is workin
-//                currentList = db.getPlaylists();
+//                tempList = db.getPlaylists();
                 break;
             case R.id.btnGenre:
                 //retrieve genres from database
                 // TODO: 11/15/2015 uncomment this when database is workin
-//                currentList = db.getGenres();
+//                tempList = db.getGenres();
             case R.id.btnSongs:
                 //retrieve songs from database
                 // TODO: 11/15/2015 uncomment this when database is workin
-//                currentList = db.getSongTitles();
+//                tempList = db.getSongTitles();
                 break;
 
         }
 
         //update displayed list via adapter
         adapter.clear();
-        adapter.addAll(Arrays.asList(currentList));
+        adapter.addAll(Arrays.asList(tempList));
         adapter.notifyDataSetChanged();
     }
 
@@ -129,12 +135,13 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         //if currentDisplay was of artists, then we want display albums now
         //rather than go straight to playing whole artist
         if (currentDisplay == display.ARTISTS) {
-            currentList= db.getAlbums();
+            currentList.clear();
+            currentList.addAll(Arrays.asList(db.getAlbums()));
             currentDisplay = display.ALBUMS;
 
             //update display
             adapter.clear();
-            adapter.addAll(Arrays.asList(currentList));
+            adapter.addAll(currentList);
             adapter.notifyDataSetChanged();
         }
         //or every other display we will get a list of MediaFiles from database
@@ -167,6 +174,6 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putStringArray("currentList",currentList);
+        outState.putSerializable("currentList", currentList);
     }
 }

@@ -15,14 +15,28 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignTop="@+id/left_drawer">
+        android:layout_alignTop="@+id/left_drawer"
+        android:weightSum="1">
         <!--add more items to the main body linear layout here-->
         <!--button-->
 
-        <FrameLayout
+        <ListView
             android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:id="@+id/now_playing_list"
+            android:choiceMode="none"
+            android:layout_weight="0.38" />
+
+        <MediaController
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/media_controller" />
+
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/player_controls"></FrameLayout>
+            android:text="play"
+            android:id="@+id/play_button" />
 
     </LinearLayout>
     <!-- The navigation drawer -->
