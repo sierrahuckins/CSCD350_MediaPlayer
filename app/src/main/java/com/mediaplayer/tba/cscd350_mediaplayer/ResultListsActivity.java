@@ -28,6 +28,9 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     ArrayAdapter<String> adapter;
     LibraryDatabase db = new LibraryDatabase(this);
 
+    // activity intent request response key
+    public static final String RESULT_LIST_ACTIVITY_RESPONSE_KEY = "response_key";
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_resultslistsactivity);

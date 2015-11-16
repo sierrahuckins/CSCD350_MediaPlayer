@@ -1,11 +1,11 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.database.sqlite.SQLiteConstraintException;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.widget.MediaController;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +32,15 @@ public class MainActivity extends AppCompatActivity {
     ActionBarDrawerToggle actionBarDrawerToggle;
     LibraryDatabase database;
 
-    private static final int DEFUALT_REQUEST_CODE = 1;
+    // media player
+    MediaPlayer mediaPlayer;
+    MediaController mediaController;
+    ArrayList<MediaFile> nowPlaying;
+
+    public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,19 +67,6 @@ public class MainActivity extends AppCompatActivity {
         };
         // run the thread
         fileSearchAndAddThread.run();
-
-//        // create new mediaPlayer
-//        MediaPlayer mediaPlayer = new MediaPlayer();
-//        // play media file
-//        try {
-//            Log.i("currentMediaFile", "Uri " + mediaFiles[100].getUri());
-//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//            mediaPlayer.setDataSource(this, mediaFiles[100].getUri());
-//            mediaPlayer.prepare();
-//            mediaPlayer.start();
-//        } catch (IOException e) {
-//            Log.e("MediaPlayer", "Media File Not Found " + mediaFiles[100].getUri());
-//        }
 
 
         // get the drawer layout
@@ -99,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (position) {
                     case 0:
                         Intent intent = new Intent(view.getContext(), ResultListsActivity.class);
-                        startActivity(intent);
+                        startActivityForResult(intent, REQUEST_CODE_RESULT_LIST_ACTIVITY);
                         break;
                 }
 
@@ -145,6 +141,66 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        if(requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY && resultCode == Activity.RESULT_OK) {
+
+            // TODO: 11/15/2015 process the request result
+        }
+
+    }
+
+    private void play() {
+
+        // check for null
+        if(mediaPlayer == null) {
+            // play next file in playlist
+            playNext();
+        }
+        // see if it is paused
+        else if(! mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        }
+    }
+
+    private void pause() {
+        // check for null
+        if(mediaPlayer == null) {
+            return;
+        }
+        // if media player is playing, pause it
+        if(mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+    }
+
+    private void playNext() {
+        // check for null player
+        if(mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
+        // check for no next items
+        if(nowPlaying.size() == 0) {
+            // no items to play
+            return;
+        }
+        // get next media file and remove it from the now playing list
+        MediaFile mediaFile = nowPlaying.get(0);
+        nowPlaying.remove(0);
+
+        // prepare the media player and start it
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(this, mediaFile.getUri());
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e("IOException", "Cannot play media file," + mediaFile.toString() + " Invalid Uri (or something like that)");
+            return;
+        }
+        mediaPlayer.start();
     }
 
     @Override
