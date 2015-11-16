@@ -20,6 +20,8 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     private static final String ALBUM = "album";
     private static final String GENRE = "genre";
     private static final String theURI = "uri";
+    private static final String PLAYLIST_TABLE = "playlists";
+    private static final String PLAYLIST = "playlist";
 
     public LibraryDatabase(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -29,7 +31,9 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE library (title TEXT NOT NULL, artist TEXT NOT NULL, " +
                 "album TEXT NOT NULL, genre TEXT NOT NULL, uri TEXT NOT NULL, " +
-                "PRIMARY KEY (title, URI));");
+                "PRIMARY KEY (uri));");
+        db.execSQL("CREATE TABLE playlists (playlist TEXT NOT NULL, uri TEXT NOT NULL," +
+                "PRIMARY KEY(playlist, uri), FOREIGN KEY( uri) REFERENCES library(uri));");
     }
 
     @Override
@@ -65,10 +69,37 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         return result != -1;
     }
 
+    @Override
+    public boolean addFileToPlaylist(String playlist, MediaFile song) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PLAYLIST, playlist);
+
+        if(song.getUri() != null)
+            contentValues.put(theURI, song.getUri().toString());
+        else
+            return false;
+
+        long result = db.insert(PLAYLIST_TABLE, null, contentValues);
+
+        return result != -1;
+    }
+
+    @Override
+    public String[] getPlaylists() {
+        String[] select = {"DISTINCT " + PLAYLIST};
+        String where = "";
+
+        Cursor results = queryPlaylist(select, where);
+
+        return constructStringResults(results);
+    }
+
     // get list of artists
     @Override
     public String[] getArtists(){
-        String[] select = {ARTIST};
+        String[] select = {"DISTINCT " + ARTIST};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
@@ -79,7 +110,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of albums
     @Override
     public String[] getAlbums(){
-        String[] select = {ALBUM};
+        String[] select = {"DISTINCT" + ALBUM};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
@@ -96,6 +127,26 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         Cursor results = queryLibrary(select, where);
 
         return constructSongResults(results);
+    }
+
+    @Override
+    public String[] getSongTitles() {
+        String[] select = {SONG};
+        String where = "";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructStringResults(results);
+    }
+
+    @Override
+    public String[] getSongsFromPlaylist(String playlist) {
+        String[] select = {SONG, theURI};
+        String where = PLAYLIST + " = " + playlist;
+
+        Cursor results = queryPlaylist(select, where);
+
+        return constructStringResults(results);
     }
 
     // get list of albums by an artist
@@ -152,6 +203,19 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         SQLiteDatabase db = this.getWritableDatabase();
         return db.rawQuery(selectClause + fromClause + whereClause, null);
     }
+
+    private Cursor queryPlaylist(String[] select, String where){
+        String selectClause = "select " + buildSelectClause(select) + " ";
+        String fromClause = "from " + PLAYLIST_TABLE + " natural join " + TABLE_NAME + " ";
+        String whereClause = "";
+
+        if(!where.equals(""))   // tests if a where clause is needed
+            whereClause = "where " + where;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery(selectClause + fromClause + whereClause, null);
+    }
+
 
     private String buildSelectClause(String[] items) {
         String clause = "";

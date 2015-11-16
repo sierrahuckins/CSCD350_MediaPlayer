@@ -27,16 +27,20 @@ public interface ISQLite {
 
     // add song to database
     boolean addMediaFile(MediaFile mediaFile);
-
+    boolean addFileToPlaylist(String playlist, MediaFile song);
 
     // querying database
 
+    // get list of playlists
+    String[] getPlaylists();
     // get list of artists
     String[] getArtists();
     // get list of albums
     String[] getAlbums();
     // get list of songs
     SongData[] getSongs();
+    String[] getSongTitles();
+    String[] getSongsFromPlaylist(String playlist);
 
     // get list of albums by an artist
     String[] getAlbums(String artist) ;
