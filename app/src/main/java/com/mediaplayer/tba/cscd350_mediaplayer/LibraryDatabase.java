@@ -4,6 +4,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -32,8 +33,8 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         db.execSQL("CREATE TABLE library (title TEXT NOT NULL, artist TEXT NOT NULL, " +
                 "album TEXT NOT NULL, genre TEXT NOT NULL, uri TEXT NOT NULL, " +
                 "PRIMARY KEY (uri));");
-        db.execSQL("CREATE TABLE playlists (playlist TEXT NOT NULL, uri TEXT NOT NULL," +
-                "PRIMARY KEY(playlist, uri), FOREIGN KEY( uri) REFERENCES library(uri));");
+        db.execSQL("CREATE TABLE playlists (playlist TEXT NOT NULL, uri TEXT NOT NULL, " +
+                "FOREIGN KEY(uri) REFERENCES library(uri));");
     }
 
     @Override
@@ -64,7 +65,13 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         else
             return false;
 
-        long result = db.insert(TABLE_NAME, null, contentValues);
+        long result = -1;
+        try {
+            result = db.insert(TABLE_NAME, null, contentValues);
+        }
+        catch(SQLiteConstraintException e){
+            return false; //repeat result
+        }
 
         return result != -1;
     }
