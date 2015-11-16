@@ -7,38 +7,50 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:id="@+id/layoutBtns">
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Artists"
             android:id="@+id/btnArtists"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:textSize="10dp" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Albums"
             android:id="@+id/btnAlbums"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:textSize="10dp" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Playlists"
             android:id="@+id/btnPlaylists"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:textSize="10dp" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Genre"
+            android:id="@+id/btnGenre"
+            android:layout_weight="1"
+            android:textSize="10dp" />
+
+        <Button
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Songs"
             android:id="@+id/btnSongs"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:textSize="10dp" />
 
     </LinearLayout>
 
