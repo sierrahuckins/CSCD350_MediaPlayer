@@ -43,7 +43,6 @@ public interface ISQLite {
 
     // get list of songs in an album
     SongData[] getSongs(String album);
-
     // get all the MediaFiles
     MediaFile[] getMediaFiles();
 

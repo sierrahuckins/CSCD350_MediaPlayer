@@ -1,6 +1,6 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
-import java.net.URI;
+import android.net.Uri;
 
 /**
  * Created by Bruce Emehiser on 11/2/2015.
@@ -13,9 +13,9 @@ public class MediaFile {
     private String album;
     private String title;
     private String genre;
-    private URI uri;
+    private Uri uri;
 
-    public MediaFile(String artist, String album, String title, String genre, URI uri) {
+    public MediaFile(String artist, String album, String title, String genre, Uri uri) {
         this.artist = artist;
         this.album = album;
         this.title = title;
@@ -47,7 +47,7 @@ public class MediaFile {
         return "";
     }
 
-    public URI getUri() {
+    public Uri getUri() {
         return uri;
     }
 
@@ -67,7 +67,12 @@ public class MediaFile {
         this.genre = genre;
     }
 
-    public void setUri(URI uri) {
+    public void setUri(Uri uri) {
         this.uri = uri;
+    }
+
+    @Override
+    public String toString() {
+        return artist + " " + album + " " + title + " " + genre + " " + uri;
     }
 }

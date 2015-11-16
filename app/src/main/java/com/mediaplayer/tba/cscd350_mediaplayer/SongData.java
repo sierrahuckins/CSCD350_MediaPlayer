@@ -21,4 +21,9 @@ public class SongData {
     public String getTheURI() { return theURI; }
 
     public void setTheURI(String theURI) { this.theURI = theURI; }
+
+    @Override
+    public String toString() {
+        return song + " " + theURI;
+    }
 }

@@ -1,6 +1,11 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
+import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -9,16 +14,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.util.List;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     DrawerAdapter drawerAdapter;
     ListView drawerLayoutListView;
     ActionBarDrawerToggle actionBarDrawerToggle;
+    LibraryDatabase database;
+
+    private static final int DEFUALT_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,38 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // create a new instance of the database
+        if(database == null)
+            database = new LibraryDatabase(this);
+
+        // call the file search to search for files in the system
+        Runnable fileSearchAndAddThread = new Runnable() {
+            @Override
+            public void run() {
+                FilesSearch filesSearch = new FilesSearch();
+                MediaFile[] mediaFiles = filesSearch.scanFileSystem(getApplicationContext());
+
+                // add all the mediafiles we just found to our database
+                // TODO: 11/9/2015 make this run on first launch, on a storage isChanged listener on the ContentResolver, or when the users says to
+                database.populateDatabase(mediaFiles); // if this runs every launch, it will produce a zillion errors because of database collision
+            }
+        };
+        // run the thread
+        fileSearchAndAddThread.run();
+
+//        // create new mediaPlayer
+//        MediaPlayer mediaPlayer = new MediaPlayer();
+//        // play media file
+//        try {
+//            Log.i("currentMediaFile", "Uri " + mediaFiles[100].getUri());
+//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//            mediaPlayer.setDataSource(this, mediaFiles[100].getUri());
+//            mediaPlayer.prepare();
+//            mediaPlayer.start();
+//        } catch (IOException e) {
+//            Log.e("MediaPlayer", "Media File Not Found " + mediaFiles[100].getUri());
+//        }
 
 
         // get the drawer layout
@@ -43,11 +80,12 @@ public class MainActivity extends AppCompatActivity {
 
         // add drawer item to drawer item list view
         // create array
-        DrawerItem[] drawerItems = new DrawerItem[1];
+        DrawerItem[] drawerItems = new DrawerItem[2];
         // populate array
-        drawerItems[0] = new DrawerItem(R.drawable.check_box_icon, "Check");
+        drawerItems[0] = new DrawerItem(R.drawable.headphones, "Library");
+        drawerItems[1] = new DrawerItem(android.R.drawable.ic_search_category_default, "Search");
 
-        // create drawer adapter with the list of drawer items
+                // create drawer adapter with the list of drawer items
         drawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
         // set the drawer adapter on the drawer
         drawerLayoutListView.setAdapter(drawerAdapter);
@@ -58,9 +96,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                // change home screen text
-                Button textView = (Button) findViewById(R.id.clickMeButton);
-                textView.setText("Check");
+                switch (position) {
+                    case 0:
+                        Intent intent = new Intent(view.getContext(), ResultListsActivity.class);
+                        startActivity(intent);
+                        break;
+                }
 
                 // close the drawer layout once an item is clicked
                 drawerLayout.closeDrawers();
