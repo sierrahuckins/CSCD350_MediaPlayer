@@ -2,12 +2,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
-import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.MediaController;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -17,21 +12,19 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.MediaController;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.LogRecord;
 
-public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     // navigation drawer
     DrawerLayout drawerLayout;
@@ -40,16 +33,17 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
     ActionBarDrawerToggle actionBarDrawerToggle;
     LibraryDatabase database;
 
-    // media player
-    MediaPlayer mediaPlayer;
-    MediaController mediaController;
-    Handler mediaControllerHandler;
+    // music player
+    MusicPlayer mMusicPlayer;
+    // music player controller
+    MusicController mMusicController;
+
+    // now playing view
     ArrayList<MediaFile> nowPlaying;
+    ArrayAdapter<MediaFile> nowPlayingAdatper;
+    ListView nowPlayingView;
 
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         // create array
         DrawerItem[] drawerItems = new DrawerItem[2];
         // populate array
-        drawerItems[0] = new DrawerItem(R.drawable.headphones, "Library");
-        drawerItems[1] = new DrawerItem(android.R.drawable.ic_search_category_default, "Search");
+        drawerItems[0] = new DrawerItem(R.drawable.music_note_white, "Library");
+        drawerItems[1] = new DrawerItem(R.drawable.search_white, "Search");
 
                 // create drawer adapter with the list of drawer items
         drawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
@@ -152,15 +146,25 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         // initialize now playing
         nowPlaying = new ArrayList<>();
 
-        // TODO: 11/15/2015 get the now_playing view and attach it to the now playing playlist
-        // TODO: 11/15/2015 update the now_playing view when the currently playing song changes
+        // get new adapter and pass it a list item layout and the text view in the list item
+        nowPlayingAdatper = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, nowPlaying);
+        // set the adapter on the list
+        nowPlayingView = (ListView) findViewById(R.id.now_playing_list);
+        nowPlayingView.setAdapter(nowPlayingAdatper);
+        nowPlayingAdatper.notifyDataSetChanged();
 
-        // initialize the media controller handler
-        mediaControllerHandler = new Handler();
+        // add files to now playing list
+        nowPlaying.addAll(Arrays.asList(database.getMediaFiles()));
 
-        // TODO: 11/15/2015 testing playback
-        Button button = (Button) findViewById(R.id.play_button);
-        button.setOnClickListener(this);
+        // create music player
+        mMusicPlayer = new MusicPlayer(this);
+        // set now playing list on music player
+        mMusicPlayer.setNowPlaying(nowPlaying);
+        // create music player controller
+        mMusicController = (MusicController) findViewById(R.id.music_controller);
+        // set controller on music player
+        mMusicController.setMusicPlayer(mMusicPlayer);
+
     }
 
     @Override
@@ -171,10 +175,14 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         LibraryDatabase db = new LibraryDatabase(this);
         MediaFile[] mediaFiles = db.getMediaFiles();
         if(mediaFiles != null) {
+            nowPlaying.clear();
             nowPlaying.addAll(Arrays.asList(mediaFiles));
         }
+
+        // set the music player now playing
+        mMusicPlayer.setNowPlaying(nowPlaying);
         // call to play first item in database
-        playNext();
+        mMusicPlayer.start();
     }
 
     @Override
@@ -186,156 +194,11 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
             Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
             nowPlaying = (ArrayList) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
 
+            // set the now playing list in the music player
+            mMusicPlayer.setNowPlaying(nowPlaying);
             // star the media player playing
-            start();
+            mMusicPlayer.start();
         }
-    }
-
-    @Override
-    public void start() {
-        // check for null
-        if(mediaPlayer == null) {
-            // play next file in playlist
-            playNext();
-        }
-        // see if it is paused
-        else if(! mediaPlayer.isPlaying()) {
-            mediaPlayer.start();
-        }
-    }
-
-    public void pause() {
-        // check for null
-        if(mediaPlayer == null) {
-            return;
-        }
-        // if media player is playing, pause it
-        if(mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-        }
-    }
-
-    public void stop() {
-        mediaController.hide();
-        mediaPlayer.stop();
-        mediaPlayer.release();
-    }
-
-    @Override
-    public int getDuration() {
-        if(mediaPlayer != null) {
-            return mediaPlayer.getDuration();
-        }
-        return 0;
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        if(mediaPlayer != null) {
-            return mediaPlayer.getCurrentPosition();
-        }
-        return 0;
-    }
-
-    @Override
-    public void seekTo(int pos) {
-        if(mediaPlayer != null) {
-            mediaPlayer.seekTo(pos);
-        }
-    }
-
-    @Override
-    public boolean isPlaying() {
-        if(mediaPlayer != null) {
-            return mediaPlayer.isPlaying();
-        }
-        return false;
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        if(mediaPlayer != null) {
-            return mediaPlayer.isPlaying();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return false;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return false;
-    }
-
-    /**
-     * Get the audio session id for the player used by this VideoView. This can be used to
-     * apply audio effects to the audio track of a video.
-     *
-     * @return The audio session, or 0 if there was an error.
-     */
-    @Override
-    public int getAudioSessionId() {
-        if(mediaPlayer != null) {
-            return mediaPlayer.getAudioSessionId();
-        }
-        return 0;
-    }
-
-    private void playNext() {
-        // check for null now playing list
-        if(nowPlaying == null) {
-            return;
-        }
-        // check for no next items
-        if(nowPlaying.size() == 0) {
-            // no items to play
-            return;
-        }
-        // check for null player
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setOnPreparedListener(this);
-        }
-        if(mediaController == null) {
-            mediaController = new MediaController(this) {
-                @Override
-                public void hide() {
-                    this.show();
-                }
-            };
-        }
-        // get next media file and remove it from the now playing list
-        MediaFile mediaFile = nowPlaying.get(0);
-        nowPlaying.remove(0);
-
-        // reset media player, prepare the media player and start it
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(this, mediaFile.getUri());
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            Log.e("IOException", "Cannot play media file," + mediaFile.toString() + " Invalid Uri (or something like that)");
-            return;
-        }
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                // reset the media player
-                mediaPlayer.reset();
-                // start the next media file
-                playNext();
-            }
-        });
-        mediaPlayer.start();
     }
 
     @Override
@@ -370,25 +233,24 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
     }
 
 
-    /**
-     * Called when the media file is ready for playback.
-     *
-     * @param mp the MediaPlayer that is ready for playback
-     */
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-
-        // se the media player to be controlled by the media controller
-        mediaController.setMediaPlayer(this);
-        // attach the media controller to the media controller widget
-        mediaController.setAnchorView(findViewById(R.id.media_controller));
-
-        mediaControllerHandler.post(new Runnable() {
-            public void run() {
-                mediaController.setEnabled(true);
-                mediaController.show();
-            }
-        });
-
-    }
+//    /**
+//     * Called when the media file is ready for playback.
+//     *
+//     * @param mp the MediaPlayer that is ready for playback
+//     */
+//    @Override
+//    public void onPrepared(MediaPlayer mp) {
+//        // se the media player to be controlled by the media controller
+//        mediaController.setMediaPlayer(mMusicPlayer);
+//        // attach the media controller to the media controller widget
+//        mediaController.setAnchorView(findViewById(R.id.media_controller));
+//
+//        mediaControllerHandler.post(new Runnable() {
+//            public void run() {
+//                mediaController.setEnabled(true);
+//                mediaController.show();
+//            }
+//        });
+//        mMediaPlayer.setNextMediaPlayer(mMusicPlayer);
+//    }
 }

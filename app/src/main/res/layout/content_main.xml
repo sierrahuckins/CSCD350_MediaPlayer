@@ -22,21 +22,16 @@
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="match_parent"
             android:id="@+id/now_playing_list"
             android:choiceMode="none"
-            android:layout_weight="0.38" />
+            android:layout_weight="1" />
 
-        <MediaController
+        <com.mediaplayer.tba.cscd350_mediaplayer.MusicController
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:id="@+id/media_controller" />
-
-        <Button
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="play"
-            android:id="@+id/play_button" />
+            android:id="@+id/music_controller"
+            android:layout_weight="1" />
 
     </LinearLayout>
     <!-- The navigation drawer -->
@@ -47,7 +42,7 @@
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="#222"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/colorBackground" />
 
 </android.support.v4.widget.DrawerLayout>

@@ -105,8 +105,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.btnPlaylists:
                 //retrieve playlists from database
-                // TODO: 11/15/2015 uncomment this when database is workin
-//                tempList = db.getPlaylists();
+                tempList = db.getPlaylists();
                 break;
             case R.id.btnGenre:
                 //retrieve genres from database
@@ -115,14 +114,14 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
             case R.id.btnSongs:
                 //retrieve songs from database
                 // TODO: 11/15/2015 uncomment this when database is workin
-//                tempList = db.getSongTitles();
+                tempList = db.getSongTitles();
                 break;
 
         }
 
-        //update displayed list via adapter
-        adapter.clear();
-        adapter.addAll(Arrays.asList(tempList));
+        // update displayed list via adapter
+        currentList.clear();
+        currentList.addAll(Arrays.asList(tempList));
         adapter.notifyDataSetChanged();
     }
 
@@ -147,16 +146,12 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         //or every other display we will get a list of MediaFiles from database
         //to be returned to MainActivity
         else if (currentDisplay == display.ALBUMS) {
-            // TODO: 11/15/2015 uncomment this when database is workin
+            // TODO: 11/15/2015 uncomment this when database is working
 //            mediaFiles = db.getAlbumData(clicked);
         }
         else if (currentDisplay == display.PLAYLISTS) {
-            // TODO: 11/15/2015 uncomment this when database is workin
+            // TODO: 11/15/2015 uncomment this when database is working
 //            mediaFiles = db.getPlaylistData(clicked);
-        }
-        else if (currentDisplay == display.ALBUMS) {
-            // TODO: 11/15/2015 uncomment this when database is workin
-//            mediaFiles = db.getAlbumData(clicked);
         }
         else {
             // TODO: 11/15/2015 uncomment this when database is working

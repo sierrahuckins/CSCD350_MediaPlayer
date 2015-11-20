@@ -77,6 +77,6 @@ public class MediaFile implements Serializable {
 
     @Override
     public String toString() {
-        return artist + " " + album + " " + title + " " + genre + " " + uri;
+        return /*artist + " " + album + " " +*/ title /*+ " " + genre + " " + uri*/;
     }
 }

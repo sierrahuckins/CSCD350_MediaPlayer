@@ -1,19 +1,12 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.AudioManager;
-import android.media.MediaActionSound;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 /**
  * Created by Kyle on 11/4/2015.
  *
@@ -51,8 +44,7 @@ public class FilesSearch implements FileCrawler {
             int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int albumColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int genreColumn = cursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
-//            int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int genreColumn = cursor.getColumnIndex(MediaStore.Audio.GenresColumns.NAME);
             int uriColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
             do {
@@ -60,11 +52,15 @@ public class FilesSearch implements FileCrawler {
                 String thisArtist = cursor.getString(artistColumn);
                 String thisAlbum = cursor.getString(albumColumn);
                 String thisTitle = cursor.getString(titleColumn);
+                Uri thisUri = Uri.parse(cursor.getString(uriColumn));
+
                 // TODO: 11/9/2015 figure out how to get the genre out of the cursor
 //                String thisGenre = cursor.getString(genreColumn);
                 String thisGenre = "Blues";
-//                Uri thisUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, uriColumn);
-                Uri thisUri = Uri.parse(cursor.getString(uriColumn));
+                /*
+                new up genre curosr from the uri to move over the genre table
+                grab genres while there are genres, and append them onto a genre string
+                 */
 
                 // create new media file with the data
                 MediaFile mediaFile = new MediaFile(thisArtist, thisAlbum, thisTitle, thisGenre, thisUri);
