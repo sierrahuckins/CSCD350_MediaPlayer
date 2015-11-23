@@ -15,6 +15,23 @@ import java.util.ArrayList;
  */
 public class MusicPlayer {
 
+    // song changed listener
+    public interface OnMediaChangedListener {
+
+        void songChanged(MusicPlayer musicPlayer);
+        void songStopped(MusicPlayer musicPlayer);
+        void songStarted(MusicPlayer musicPlayer);
+    }
+
+    private enum Notification {
+        SONG_CHANGED,
+        SONG_PAUSED,
+        SONG_RESUMED
+    }
+
+    // array of listeners
+    private ArrayList<OnMediaChangedListener> listeners;
+
     // context of application
     private Context mContext;
 
@@ -25,38 +42,42 @@ public class MusicPlayer {
     private ArrayList<MediaFile> mNowPlaying;
     private int mNowPlayingPosition;
 
-    // control variables
-    private boolean mLoopSong;
-
     public MusicPlayer(Context context) {
         mContext = context;
         mNowPlaying = new ArrayList<>();
         mNowPlayingPosition = 0;
+        listeners = new ArrayList<>();
     }
 
     public void setNowPlaying(final ArrayList<MediaFile> nowPlaying) {
         // set the now playing list
         if(nowPlaying != null) {
             mNowPlaying = nowPlaying;
+            mNowPlayingPosition = 0;
         }
     }
 
-    public void setLoopSong(boolean loop) {
-        mLoopSong = loop;
+    public void setLooping(boolean loop) {
+        if(mMediaPlayer != null) {
+            mMediaPlayer.setLooping(loop);
+        }
     }
 
     public boolean getLoopSong() {
-        return mLoopSong;
+        return mMediaPlayer != null && mMediaPlayer.isLooping();
     }
 
     public void start() {
         // media player is stopped
         if(mMediaPlayer == null) {
-            next();
+            begin();
         }
         // media player is paused
         else if(! mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
+
+            // notify listeners
+            notifyListeners(Notification.SONG_RESUMED);
         }
     }
 
@@ -122,7 +143,7 @@ public class MusicPlayer {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 // if we are looping
-                if(mLoopSong) {
+                if(mMediaPlayer.isLooping()) {
                     // begin current song
                     begin();
                 }
@@ -134,6 +155,9 @@ public class MusicPlayer {
         });
         // start the song playing
         mMediaPlayer.start();
+
+        // notify listeners
+        notifyListeners(Notification.SONG_CHANGED);
     }
 
     public void pause() {
@@ -144,6 +168,9 @@ public class MusicPlayer {
         // if media player is playing, pause it
         if(mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
+
+            // notify listeners
+            notifyListeners(Notification.SONG_PAUSED);
         }
     }
 
@@ -155,10 +182,7 @@ public class MusicPlayer {
 
     public boolean isPlaying() {
 
-        if(mMediaPlayer != null) {
-            return mMediaPlayer.isPlaying();
-        }
-        return false;
+        return mMediaPlayer != null && mMediaPlayer.isPlaying();
     }
 
     public int getDuration() {
@@ -173,5 +197,41 @@ public class MusicPlayer {
             return  mMediaPlayer.getCurrentPosition();
         }
         return 0;
+    }
+
+    public void seekTo(int msec) {
+        if(mMediaPlayer != null) {
+            mMediaPlayer.seekTo(msec);
+        }
+    }
+
+    public void setOnMediaChangedListener(OnMediaChangedListener listener) {
+        if(listener != null) {
+            listeners.add(listener);
+        }
+    }
+
+    private void notifyListeners(Notification notification) {
+
+        // update listeners
+        switch (notification) {
+
+            case SONG_CHANGED:
+                for (OnMediaChangedListener listener : listeners) {
+                    listener.songChanged(this);
+                }
+                break;
+            case SONG_PAUSED:
+                for (OnMediaChangedListener listener : listeners) {
+                    listener.songStopped(this);
+                }
+                break;
+            case SONG_RESUMED:
+                for (OnMediaChangedListener listener : listeners) {
+                    listener.songStarted(this);
+                }
+                break;
+        }
+
     }
 }

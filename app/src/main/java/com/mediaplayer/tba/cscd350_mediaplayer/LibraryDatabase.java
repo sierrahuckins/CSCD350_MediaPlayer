@@ -4,6 +4,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -14,7 +15,7 @@ import android.net.Uri;
  */
 public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     private static final String DATABASE_NAME = "MediaPlayerLibrary.db";
-    private static final String TABLE_NAME = "music_note";
+    private static final String TABLE_NAME = "library";
     private static final String SONG = "title";
     private static final String ARTIST = "artist";
     private static final String ALBUM = "album";
@@ -29,16 +30,16 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE music_note (title TEXT NOT NULL, artist TEXT NOT NULL, " +
+        db.execSQL("CREATE TABLE library (title TEXT NOT NULL, artist TEXT NOT NULL, " +
                 "album TEXT NOT NULL, genre TEXT NOT NULL, uri TEXT NOT NULL, " +
                 "PRIMARY KEY (uri));");
-        db.execSQL("CREATE TABLE playlists (playlist TEXT NOT NULL, uri TEXT NOT NULL," +
-                "PRIMARY KEY(playlist, uri), FOREIGN KEY( uri) REFERENCES music_note(uri));");
+        db.execSQL("CREATE TABLE playlists (playlist TEXT NOT NULL, uri TEXT NOT NULL, " +
+                "FOREIGN KEY(uri) REFERENCES library(uri));");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exists music_note" );
+        db.execSQL("drop table if exists library" );
         onCreate(db);
     }
 
@@ -64,7 +65,14 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         else
             return false;
 
-        long result = db.insert(TABLE_NAME, null, contentValues);
+        long result = -1;
+
+        try {
+            result = db.insert(TABLE_NAME, null, contentValues);
+        }
+        catch(SQLiteConstraintException e){
+            return false; //item already in database
+        }
 
         return result != -1;
     }
@@ -84,6 +92,26 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         long result = db.insert(PLAYLIST_TABLE, null, contentValues);
 
         return result != -1;
+    }
+
+    @Override
+    public MediaFile getMediaFile(String uri) {
+        String[] select = {"*"};
+        String where = theURI + " = \"" + uri + "\"";
+
+        Cursor results = queryLibrary(select, where);
+
+        MediaFile item = new MediaFile();
+
+        item.setTitle(results.getString(0));
+        item.setArtist(results.getString(1));
+        item.setAlbum(results.getString(2));
+        item.setGenre(results.getString(3));
+
+        Uri tmpURI = Uri.parse(results.getString(4));
+        item.setUri(tmpURI);
+
+        return item;
     }
 
     @Override
@@ -110,7 +138,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of albums
     @Override
     public String[] getAlbums(){
-        String[] select = {"DISTINCT" + ALBUM};
+        String[] select = {"DISTINCT " + ALBUM};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
@@ -142,7 +170,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     @Override
     public String[] getSongsFromPlaylist(String playlist) {
         String[] select = {SONG, theURI};
-        String where = PLAYLIST + " = " + playlist;
+        String where = PLAYLIST + " = \"" + playlist + "\"";
 
         Cursor results = queryPlaylist(select, where);
 
@@ -152,8 +180,8 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of albums by an artist
     @Override
     public String[] getAlbums(String artist){
-        String[] select = {ALBUM};
-        String where = ARTIST + " = " + artist ;
+        String[] select = {"DISTINCT " + ALBUM};
+        String where = ARTIST + " = \"" + artist + "\"" ;
 
         Cursor results = queryLibrary(select, where);
 
@@ -164,7 +192,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     @Override
     public SongData[] getSongs(String album){
         String[] select = {SONG, theURI};
-        String where = ALBUM + " = " + album ;
+        String where = ALBUM + " = \"" + album + "\"";
 
         Cursor results = queryLibrary(select, where);
 
@@ -177,6 +205,36 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         String where = "";
 
         Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromAlbum(String album) {
+        String[] select = {"*"};
+        String where = ALBUM + " =  \"" + album + "\"";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromArtist(String artist) {
+        String[] select = {"*"};
+        String where = ARTIST + " = \"" + artist + "\"";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromPlaylist(String playlist) {
+        String[] select = {SONG, ARTIST, ALBUM, GENRE, theURI};
+        String where = PLAYLIST + " = \"" + playlist + "\"";
+
+        Cursor results = queryPlaylist(select, where);
 
         return constructMediaFileResults(results);
     }
@@ -258,8 +316,8 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
             tmpURI = Uri.parse(results.getString(4));
 
-            data[i] = new MediaFile(results.getString(1),
-                    results.getString(2), results.getString(0), results.getString(3), tmpURI);
+            data[i] = new MediaFile(results.getString(0), results.getString(1),
+                    results.getString(2),results.getString(3), tmpURI);
             i ++;
         }
 

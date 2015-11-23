@@ -17,13 +17,24 @@ public class MediaFile implements Serializable {
     private String album;
     private String title;
     private String genre;
-    private Uri uri;
+    private String uriString;
+    transient private Uri uri;
+
+    public MediaFile(){
+        this.artist = null;
+        this.album = null;
+        this.title = null;
+        this.genre = null;
+        this.uriString = null;
+        this.uri = null;
+    }
 
     public MediaFile(String artist, String album, String title, String genre, Uri uri) {
         this.artist = artist;
         this.album = album;
         this.title = title;
         this.genre = genre;
+        this.uriString = uri.toString();
         this.uri = uri;
     }
 
@@ -52,7 +63,13 @@ public class MediaFile implements Serializable {
     }
 
     public Uri getUri() {
-        return uri;
+        if(uri != null) {
+            return uri;
+        }
+        else if(uriString != null) {
+            return Uri.parse(uriString);
+        }
+        throw new NullPointerException("Uri is null");
     }
 
     public void setArtist(String artist) {

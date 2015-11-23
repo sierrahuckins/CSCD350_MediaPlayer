@@ -3,6 +3,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +24,7 @@ import android.widget.MediaController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -154,13 +156,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         nowPlayingAdatper.notifyDataSetChanged();
 
         // add files to now playing list
-        nowPlaying.addAll(Arrays.asList(database.getMediaFiles()));
+//        nowPlaying.addAll(Arrays.asList(database.getMediaFiles()));
 
         // create music player
         mMusicPlayer = new MusicPlayer(this);
         // set now playing list on music player
-        mMusicPlayer.setNowPlaying(nowPlaying);
-        // create music player controller
+//        mMusicPlayer.setNowPlaying(nowPlaying);
+//        // create music player controller
         mMusicController = (MusicController) findViewById(R.id.music_controller);
         // set controller on music player
         mMusicController.setMusicPlayer(mMusicPlayer);
@@ -192,12 +194,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY && resultCode == Activity.RESULT_OK) {
             // get the array of media files from the intent
             Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
-            nowPlaying = (ArrayList) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
-
+            Object[] ara = (Object[]) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
+            // clear now playing list and add new items
+            nowPlaying.clear();
+            for( Object o : ara) {
+                nowPlaying.add((MediaFile) o);
+            }
             // set the now playing list in the music player
             mMusicPlayer.setNowPlaying(nowPlaying);
             // star the media player playing
             mMusicPlayer.start();
+
+            // update the now playing view
+            nowPlayingAdatper.notifyDataSetChanged();
         }
     }
 

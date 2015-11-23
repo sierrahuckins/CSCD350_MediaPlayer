@@ -31,12 +31,22 @@ public interface ISQLite {
 
     // querying database
 
+    // get media files
+    MediaFile getMediaFile(String uri);                  // get single
+    MediaFile[] getMediaFiles();                         // get all
+    MediaFile[] getMediaFilesFromAlbum(String album);
+    MediaFile[] getMediaFilesFromArtist(String artist);
+    MediaFile[] getMediaFilesFromPlaylist(String playlist);
+
     // get list of playlists
     String[] getPlaylists();
+
     // get list of artists
     String[] getArtists();
+
     // get list of albums
     String[] getAlbums();
+
     // get list of songs
     SongData[] getSongs();
     String[] getSongTitles();
@@ -47,8 +57,8 @@ public interface ISQLite {
 
     // get list of songs in an album
     SongData[] getSongs(String album);
+
     // get all the MediaFiles
-    MediaFile[] getMediaFiles();
 
     /*
      * search the database
