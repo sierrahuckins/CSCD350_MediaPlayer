@@ -4,6 +4,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -23,6 +24,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     private static final String theURI = "uri";
     private static final String PLAYLIST_TABLE = "playlists";
     private static final String PLAYLIST = "playlist";
+    private static SQLiteDatabase theDB;
 
     public LibraryDatabase(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -35,6 +37,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
                 "PRIMARY KEY (uri));");
         db.execSQL("CREATE TABLE playlists (playlist TEXT NOT NULL, uri TEXT NOT NULL, " +
                 "FOREIGN KEY(uri) REFERENCES library(uri));");
+        theDB = db;
     }
 
     @Override
@@ -42,7 +45,6 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         db.execSQL("drop table if exists library" );
         onCreate(db);
     }
-
 
     @Override
     public void populateDatabase(MediaFile[] foundFiles) {
@@ -95,6 +97,32 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     }
 
     @Override
+    public boolean removeFromLibrary(String uri) {
+        try {
+            String delete = "DELETE FROM " + TABLE_NAME + " ";
+            String where = "WHERE " + theURI + " = " + uri + ";";
+            theDB.execSQL(delete + where);
+            return true;
+        }
+        catch(SQLException e) { // If delete fails
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeFromPlaylist(String playlist, String title) {
+        try{
+            String delete = "DELETE FROM " + PLAYLIST_TABLE + " ";
+            String where = "WHERE " + PLAYLIST  + " = " + playlist + " AND " + SONG + " = " + title + ";";
+            theDB.execSQL(delete + where);
+            return true;
+        }
+        catch(SQLException e) {// if delete fails
+            return false;
+        }
+    }
+
+    @Override
     public MediaFile getMediaFile(String uri) {
         String[] select = {"*"};
         String where = theURI + " = \"" + uri + "\"";
@@ -139,6 +167,16 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     @Override
     public String[] getAlbums(){
         String[] select = {"DISTINCT " + ALBUM};
+        String where = "";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructStringResults(results);
+    }
+
+    @Override
+    public String[] getGenre() {
+        String[] select = {"DISTINCT " + GENRE};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
