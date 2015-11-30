@@ -2,10 +2,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -18,13 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.MediaController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // music player
     MusicPlayer mMusicPlayer;
     // music player controller
-    MusicController mMusicController;
+    MusicPlayerController mMusicPlayerController;
 
     // now playing view
     ArrayList<MediaFile> nowPlaying;
@@ -163,9 +157,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // set now playing list on music player
 //        mMusicPlayer.setNowPlaying(nowPlaying);
 //        // create music player controller
-        mMusicController = (MusicController) findViewById(R.id.music_controller);
+        mMusicPlayerController = (MusicPlayerController) findViewById(R.id.music_controller);
         // set controller on music player
-        mMusicController.setMusicPlayer(mMusicPlayer);
+        mMusicPlayerController.setMusicPlayer(mMusicPlayer);
 
     }
 
