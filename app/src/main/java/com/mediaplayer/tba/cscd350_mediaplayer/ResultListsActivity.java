@@ -3,6 +3,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -38,7 +40,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
     //holds the current list of strings that is being displayed
     private ArrayList<String> currentList;
-    private ArrayList<SongData> currentListSongData;
+    private ArrayList<MediaFile> currentListMediaFiles;
 
     private enum display {ARTISTS, ALBUMS, PLAYLISTS, SONGS, GENRES}
     private display currentDisplay;
@@ -72,7 +74,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
         // create current list
         currentList = new ArrayList<>();
-        currentListSongData = new ArrayList<>();
+        currentListMediaFiles = new ArrayList<>();
 
         //update list if there is saved instance data from before
         if (savedInstanceState != null) {
@@ -80,6 +82,8 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
             // TODO: 11/22/2015 get currentDisplay as well
             if(temp != null) {
                 currentList.addAll(temp);
+                // TODO: 11/27/2015 make display persist across app rotations
+//                currentDisplay = display.ARTISTS;
             }
         }
         else {
@@ -97,31 +101,34 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
 
-        String[] tempList = new String[0];
+        String[] temp = new String[0];
         switch(v.getId()) {
             case R.id.btnArtists:
                 //retrieve artists from database
-                tempList = db.getArtists();
+                temp = db.getArtists();
                 currentDisplay = display.ARTISTS;
                 break;
             case R.id.btnAlbums:
                 //retrieve albums from database
-                tempList = db.getAlbums();
+                temp = db.getAlbums();
                 currentDisplay = display.ALBUMS;
                 break;
             case R.id.btnPlaylists:
                 //retrieve playlists from database
-                tempList = db.getPlaylists();
+                temp = db.getPlaylists();
                 currentDisplay = display.PLAYLISTS;
                 break;
             case R.id.btnGenre:
                 //retrieve genres from database
-                // TODO: 11/15/2015 uncomment this when database is workin
+                // TODO: 11/15/2015 uncomment this when database is working
 //                tempList = db.getGenres();
 //                currentDisplay = display.GENRES;
+                break;
             case R.id.btnSongs:
                 //retrieve songs from database
-                tempList = db.getSongTitles();
+                temp = db.getSongTitles();
+                currentListMediaFiles.clear();
+                currentListMediaFiles.addAll(Arrays.asList(db.getMediaFiles()));
                 currentDisplay = display.SONGS;
                 break;
 
@@ -129,7 +136,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
         // update displayed list via adapter
         currentList.clear();
-        currentList.addAll(Arrays.asList(tempList));
+        currentList.addAll(Arrays.asList(temp));
         adapter.notifyDataSetChanged();
     }
 
@@ -138,51 +145,49 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         //save reference to the item that was clicked as the string that was displayed
-        String clicked = (String)parent.getItemAtPosition(position);
-
+        String clicked = currentList.get(position);
         // set list to artists
         if (currentDisplay == display.ARTISTS) {
+
+            // add all artists from database
             currentList.clear();
             currentList.addAll(Arrays.asList(db.getAlbums(clicked)));
-
             // update current view
             currentDisplay = display.ALBUMS;
             //update display
             adapter.notifyDataSetChanged();
         }
-        //or every other display we will get a list of MediaFiles from database
-        //to be returned to MainActivity
         else if (currentDisplay == display.ALBUMS) {
-//            // media to display
-//            ArrayList<SongData> songs = new ArrayList<SongData>();
-//            songs.addAll(Arrays.asList(db.getSongs(currentList.get(position))));
-//
-//            // add to current list
-//            currentList.clear();
-//            for(SongData song : songs) {
-//                currentList.add(song.getDataRequested());
-//            }
-//
-//            // update current view
-//            currentDisplay = display.SONGS;
-//            //update display
-//            adapter.notifyDataSetChanged();
+            // media to display
+            ArrayList<SongData> songs = new ArrayList<>();
+            songs.addAll(Arrays.asList(db.getSongs(clicked)));
 
-            // return album
-            mediaFiles = db.getMediaFilesFromAlbum(clicked);
-            returnIntent(mediaFiles);
+            // get all the songs in that album
+            currentListMediaFiles.addAll(Arrays.asList(db.getMediaFilesFromAlbum(clicked)));
+
+            // add to current list
+            currentList.clear();
+            for(SongData song : songs) {
+                currentList.add(song.getTitle());
+            }
+
+            // update current view
+            currentDisplay = display.SONGS;
+            //update display
+            adapter.notifyDataSetChanged();
         }
         else if(currentDisplay == display.SONGS) {
-            // get media files from database
 
-//            ArrayList<MediaFile> mediaFilesL = new ArrayList<>();
-//            mediaFilesL.addAll(Arrays.asList(mediaFiles));
+            // get sublist that contains media files beyond the position clicked
+            MediaFile[] temp = new MediaFile[currentListMediaFiles.size() - position];
+            for(int i = 0; i < temp.length; i ++) {
+                temp[i] = currentListMediaFiles.get(i + position);
+            }
 
-            // get the songs from current song to end of album, and call returnIntent with the array
-            returnIntent(mediaFiles);
+            returnIntent(temp);
         }
         else if (currentDisplay == display.PLAYLISTS) {
-            mediaFiles = db.getMediaFilesFromPlaylist(currentList.get(position));
+            mediaFiles = db.getMediaFilesFromPlaylist(clicked);
             // return to main activity
             returnIntent(mediaFiles);
         }
@@ -190,6 +195,9 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
             // TODO: 11/15/2015 uncomment this when database is working
 //            mediaFiles = db.getSongsData(position);
         }
+
+        // update current list
+
     }
 
     private void returnIntent(MediaFile[] mediaFiles) {

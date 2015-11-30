@@ -13,44 +13,49 @@
         android:id="@+id/layoutBtns">
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Artists"
             android:id="@+id/btnArtists"
-            android:layout_weight="1"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:layout_weight="1" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Albums"
             android:id="@+id/btnAlbums"
-            android:layout_weight="1"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:layout_weight="1" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Playlists"
             android:id="@+id/btnPlaylists"
-            android:layout_weight="1"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:layout_weight="1" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Genre"
             android:id="@+id/btnGenre"
-            android:layout_weight="1"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:layout_weight="1" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Songs"
             android:id="@+id/btnSongs"
-            android:layout_weight="1"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

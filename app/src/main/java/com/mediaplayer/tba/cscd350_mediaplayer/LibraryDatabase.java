@@ -354,8 +354,8 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
             tmpURI = Uri.parse(results.getString(4));
 
-            data[i] = new MediaFile(results.getString(0), results.getString(1),
-                    results.getString(2),results.getString(3), tmpURI);
+            data[i] = new MediaFile(results.getString(1), results.getString(2), results.getString(0),
+                    results.getString(3), tmpURI);
             i ++;
         }
 
