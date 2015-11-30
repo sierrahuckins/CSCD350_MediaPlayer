@@ -13,8 +13,9 @@ import android.widget.SeekBar;
 /**
  * Created by Bruce Emehiser on 11/19/2015.
  *
+ * Custom view used to control a Music Player
  */
-public class MusicController extends LinearLayout implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, MusicPlayer.OnMediaChangedListener {
+public class MusicPlayerController extends LinearLayout implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, MusicPlayer.OnMediaChangedListener {
 
     // activity context
     private Context mContext;
@@ -34,19 +35,19 @@ public class MusicController extends LinearLayout implements View.OnClickListene
     boolean mDragging;
     static final int SHOW_PROGRESS = 1;
 
-    public MusicController(Context context) {
+    public MusicPlayerController(Context context) {
         super(context);
         mContext = context;
         initialize();
     }
 
-    public MusicController(Context context, AttributeSet attrs) {
+    public MusicPlayerController(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         initialize();
     }
 
-    public MusicController(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MusicPlayerController(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         initialize();
@@ -185,23 +186,25 @@ public class MusicController extends LinearLayout implements View.OnClickListene
         mHandler.sendEmptyMessage(SHOW_PROGRESS);
     }
 
+    /**
+     * This block of code will stop being called when the media player stops.
+     * Because , the handler and the activity
+     * it is attached to will be garbage collected
+     */
     @SuppressWarnings("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             int pos;
-            if(mMusicPlayer != null) {
+            if(mMusicPlayer.isPlaying()) {
                 pos = mMusicPlayer.getCurrentPosition();
                 if(! mDragging) {
                     // update seek bar
                     mSeekBar.setProgress(pos);
                 }
-                if (mMusicPlayer.isPlaying()) {
-                    // clear last message
-                    msg = obtainMessage(SHOW_PROGRESS);
-                    // set next message and delay
-                    sendMessageDelayed(msg, 1000 - (pos % 1000));
-                }
+                // clear and set next message and delay
+                msg = obtainMessage(SHOW_PROGRESS);
+                mHandler.sendMessageDelayed(msg, 1000 - (pos % 1000));
             }
             else {
                 // clear messages

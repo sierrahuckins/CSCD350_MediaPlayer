@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Created by Bruce Emehiser on 11/19/2015.
  *
- * Wrapper around MediaPlayer, and MediaController
+ * Wrapper around MediaPlayer
  */
 public class MusicPlayer {
 
@@ -23,6 +23,7 @@ public class MusicPlayer {
         void songStarted(MusicPlayer musicPlayer);
     }
 
+    // notification types
     private enum Notification {
         SONG_CHANGED,
         SONG_PAUSED,
@@ -232,6 +233,5 @@ public class MusicPlayer {
                 }
                 break;
         }
-
     }
 }

@@ -6,17 +6,17 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
  */
 
 public class SongData {
-    private String song;
+    private String title;
     private String theURI;
 
-    public SongData(String dataRequested, String theURI) {
-        this.song = dataRequested;
+    public SongData(String title, String theURI) {
+        this.title = title;
         this.theURI = theURI;
     }
 
-    public String getDataRequested() { return song; }
+    public String getTitle() { return title; }
 
-    public void setDataRequested(String song) { this.song = song; }
+    public void setTitle(String song) { this.title = song; }
 
     public String getTheURI() { return theURI; }
 
@@ -24,6 +24,6 @@ public class SongData {
 
     @Override
     public String toString() {
-        return song + " " + theURI;
+        return title + " " + theURI;
     }
 }

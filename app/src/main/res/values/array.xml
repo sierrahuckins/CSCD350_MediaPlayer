@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="menu">
+        <item>Item 1</item>
+        <item>Item 2</item>
+        <item>...</item>
+        <item>Item n</item>
+    </string-array>
+
+</resources>
