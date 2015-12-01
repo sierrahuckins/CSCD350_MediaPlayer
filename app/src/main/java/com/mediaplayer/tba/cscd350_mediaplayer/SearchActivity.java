@@ -29,11 +29,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     EditText searchField;
 
     //holds the array list of MediaFiles that will be returned to MainActivity
-    private MediaFile[] mediaFiles;
+//    private MediaFile[] mediaFiles;
 
     //holds the current list of strings that is being displayed
-    private ArrayList<String> currentList;
-    private ArrayList<SongData> currentListSongData;
+    private ArrayList<String> currentListStrings;
+    private ArrayList<MediaFile> currentListMediaFiles;
 
     private ArrayAdapter<String> adapter;
     private LibraryDatabase db = new LibraryDatabase(this);
@@ -57,20 +57,20 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         listResults.setOnItemClickListener(this);
 
         // create current list
-        currentList = new ArrayList<>();
-        currentListSongData = new ArrayList<>();
+        currentListStrings = new ArrayList<>();
+        currentListMediaFiles = new ArrayList<>();
 
         //update list if there is saved instance data from before
         if (savedInstanceState != null) {
-            ArrayList<String> temp = (ArrayList<String>) savedInstanceState.getSerializable("currentList");
+            ArrayList<String> temp = (ArrayList<String>) savedInstanceState.getSerializable("currentListStrings");
             // TODO: 11/22/2015 get currentDisplay as well
             if(temp != null) {
-                currentList.addAll(temp);
+                currentListStrings.addAll(temp);
             }
         }
 
         // get new adapter and pass it a list item layout and the text view in the list item
-        adapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, currentList);
+        adapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, currentListStrings);
         // set the adapter on the list in content_resultslistactivity
         listResults.setAdapter(adapter);
     }
@@ -85,17 +85,21 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
         else {
             //retrieve results from database
-            mediaFiles = db.search(searchValue);
+            MediaFile[] mediaFiles = db.search(searchValue);
 
+            // add to list of media files
+            currentListMediaFiles.clear();
+            currentListMediaFiles.addAll(Arrays.asList(mediaFiles));
+
+            // make array of string titles of media files
             String[] tempList = new String[mediaFiles.length];
-
             for (int x = 0; x < mediaFiles.length; x++) {
                 tempList[x] = mediaFiles[x].toString();
             }
 
             // update displayed list via adapter
-            currentList.clear();
-            currentList.addAll(Arrays.asList(tempList));
+            currentListStrings.clear();
+            currentListStrings.addAll(Arrays.asList(tempList));
             adapter.notifyDataSetChanged();
         }
     }
@@ -104,11 +108,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //get sublist that contains media files beyond the position clicked
-        MediaFile[] temp = new MediaFile[mediaFiles.length - position];
+        MediaFile[] temp = new MediaFile[currentListMediaFiles.size() - position];
         for(int i = 0; i < temp.length; i ++) {
-            temp[i] = mediaFiles[i + position];
+            temp[i] = currentListMediaFiles.get(i + position);
         }
 
+        // return to calling activity
         returnIntent(temp);
     }
 
@@ -128,6 +133,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("currentList", currentList);
+        outState.putSerializable("currentListStrings", currentListStrings);
     }
 }

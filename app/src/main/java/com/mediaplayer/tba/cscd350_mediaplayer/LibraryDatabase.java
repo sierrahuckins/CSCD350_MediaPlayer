@@ -16,10 +16,10 @@ import android.net.Uri;
  */
 public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     private static final String DATABASE_NAME = "MediaPlayerLibrary.db";
-    private static final String TABLE_NAME = "library";
-    private static final String SONG = "title";
+    private static final String LIBRARY_TABLE = "library";
     private static final String ARTIST = "artist";
     private static final String ALBUM = "album";
+    private static final String TITLE = "title";
     private static final String GENRE = "genre";
     private static final String theURI = "uri";
     private static final String PLAYLIST_TABLE = "playlists";
@@ -55,7 +55,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SONG, mediaFile.getTitle());
+        contentValues.put(TITLE, mediaFile.getTitle());
         contentValues.put(ARTIST, mediaFile.getArtist());
         contentValues.put(ALBUM, mediaFile.getAlbum());
         contentValues.put(GENRE, mediaFile.getGenre());
@@ -68,7 +68,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         long result = -1;
 
         try {
-            result = db.insert(TABLE_NAME, null, contentValues);
+            result = db.insert(LIBRARY_TABLE, null, contentValues);
         }
         catch(SQLiteConstraintException e){
             return false; //item already in database
@@ -98,7 +98,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     public boolean removeFromLibrary(String uri) {
         try {
             SQLiteDatabase db = getWritableDatabase();
-            String delete = "DELETE FROM " + TABLE_NAME + " ";
+            String delete = "DELETE FROM " + LIBRARY_TABLE + " ";
             String where = "WHERE " + theURI + " = \"" + uri + "\";";
             db.execSQL(delete + where);
             return true;
@@ -113,9 +113,9 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         try{
             SQLiteDatabase db = getWritableDatabase();
             String delete = "DELETE FROM " + PLAYLIST_TABLE + " ";
-//            String where = "WHERE " + PLAYLIST  + " = \"" + playlist + "\" AND " + SONG + " = \"" + title + "\"";
+//            String where = "WHERE " + PLAYLIST  + " = \"" + playlist + "\" AND " + TITLE + " = \"" + title + "\"";
             // this will remove the first instance of the entry with @title
-            String where = "WHERE " + PLAYLIST + " = \"" + playlist + "\" AND " + theURI + " IN (SELECT " + theURI + " FROM " + TABLE_NAME + " WHERE " + SONG + " = \"" + title + "\")";
+            String where = "WHERE " + PLAYLIST + " = \"" + playlist + "\" AND " + theURI + " IN (SELECT " + theURI + " FROM " + LIBRARY_TABLE + " WHERE " + TITLE + " = \"" + title + "\")";
             db.execSQL(delete + where);
             return true;
         }
@@ -189,7 +189,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of songs
     @Override
     public SongData[] getSongs(){
-        String[] select = {SONG, theURI};
+        String[] select = {TITLE, theURI};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
@@ -199,7 +199,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     @Override
     public String[] getSongTitles() {
-        String[] select = {SONG};
+        String[] select = {TITLE};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
@@ -209,7 +209,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     @Override
     public String[] getSongsFromPlaylist(String playlist) {
-        String[] select = {SONG, theURI};
+        String[] select = {TITLE, theURI};
         String where = PLAYLIST + " = \"" + playlist + "\"";
 
         Cursor results = queryPlaylist(select, where);
@@ -231,7 +231,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of songs in an album
     @Override
     public SongData[] getSongs(String album){
-        String[] select = {SONG, theURI};
+        String[] select = {TITLE, theURI};
         String where = ALBUM + " = \"" + album + "\"";
 
         Cursor results = queryLibrary(select, where);
@@ -271,7 +271,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     @Override
     public MediaFile[] getMediaFilesFromPlaylist(String playlist) {
-        String[] select = {SONG, ARTIST, ALBUM, GENRE, theURI};
+        String[] select = {TITLE, ARTIST, ALBUM, GENRE, theURI};
         String where = PLAYLIST + " = \"" + playlist + "\"";
 
         Cursor results = queryPlaylist(select, where);
@@ -282,8 +282,10 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     @Override
     public MediaFile[] search(String search) {
         String[] select = {"*"};
-        String where = "Concat(title, '', artist, '', album, ' '," +
-                " genre) like \"%"+ search +"%\"";
+//        String where = "Concat(title, '', artist, '', album, ' '," +
+//                " genre) like \"%"+ search +"%\"";
+        String where = " (" + TITLE + " || " + ARTIST + " || " + ALBUM + " || " + GENRE +") LIKE \"%"+ search +"%\"";
+
 
         Cursor results = queryLibrary(select, where);
 
@@ -292,7 +294,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     private Cursor queryLibrary(String[] select, String where) {
         String selectClause = "select " + buildSelectClause(select) + " ";
-        String fromClause = "from " + TABLE_NAME + " ";
+        String fromClause = "from " + LIBRARY_TABLE + " ";
         String whereClause = "";
 
         if(!where.equals(""))   // tests if a where clause is needed
@@ -304,7 +306,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     private Cursor queryPlaylist(String[] select, String where){
         String selectClause = "select " + buildSelectClause(select) + " ";
-        String fromClause = "from " + PLAYLIST_TABLE + " natural join " + TABLE_NAME + " ";
+        String fromClause = "from " + PLAYLIST_TABLE + " natural join " + LIBRARY_TABLE + " ";
         String whereClause = "";
 
         if(!where.equals(""))   // tests if a where clause is needed
@@ -324,7 +326,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
                 clause += ", " + items[i];
         }
         else
-            clause = SONG + ", " + theURI;  // returns song info and URI on invalid input
+            clause = TITLE + ", " + theURI;  // returns song info and URI on invalid input
 
         return clause;
     }
