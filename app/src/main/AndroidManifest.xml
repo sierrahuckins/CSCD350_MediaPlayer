@@ -24,7 +24,11 @@
         </activity>
         <activity
             android:name=".ResultListsActivity"
-            android:label="@string/result_list_name">
+            android:label="ResultListActivity">
+        </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:label="SearchActivity">
         </activity>
     </application>
 

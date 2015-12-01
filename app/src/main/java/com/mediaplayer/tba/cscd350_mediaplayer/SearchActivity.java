@@ -15,7 +15,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
 /**
 *SearchActivity.java
 *Author: Sierra Huckins
@@ -27,10 +26,7 @@ import java.util.Arrays;
 **/
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    //member variables for buttons and clickable display
-    private Button searchBtn;
-    private ListView listResults;
-    private EditText searchTxtFld;
+    EditText searchField;
 
     //holds the array list of MediaFiles that will be returned to MainActivity
     private MediaFile[] mediaFiles;
@@ -43,17 +39,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private LibraryDatabase db = new LibraryDatabase(this);
 
     // activity intent request response key
-    public static final String RESULT_LIST_ACTIVITY_RESPONSE_KEY = "response_key";
+    public static final String SEARCH_ACTIVITY_RESPONSE_KEY = "response_key";
 
     @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_results_list);
+        setContentView(R.layout.activity_search);
 
         //initialize references to all buttons
-        searchBtn = (Button)findViewById(R.id.btnSearch);
-        searchTxtFld = (EditText)findViewById(R.id.txtfldSearch);
-        listResults = (ListView)findViewById(R.id.listResults);
+        Button searchBtn = (Button)findViewById(R.id.btnSearch);
+        EditText searchTxtFld = (EditText)findViewById(R.id.txtfldSearch);
+        searchField = searchTxtFld;
+        ListView listResults = (ListView)findViewById(R.id.listResults);
 
         //set on click listeners for buttons and clickable display
         searchBtn.setOnClickListener(this);
@@ -81,7 +78,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //onClick listener for buttons
     @Override
     public void onClick(View v) {
-        String searchValue = String.valueOf(searchTxtFld.getText().toString());
+        String searchValue = String.valueOf(searchField.getText().toString());
 
         if (searchValue.equals("")) {
             Toast.makeText(this, "Please enter a search request above!", Toast.LENGTH_LONG).show();
@@ -106,15 +103,21 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //onClick listener for clickable display
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //TODO return clicked item
+        //get sublist that contains media files beyond the position clicked
+        MediaFile[] temp = new MediaFile[mediaFiles.length - position];
+        for(int i = 0; i < temp.length; i ++) {
+            temp[i] = mediaFiles[i + position];
+        }
+
+        returnIntent(temp);
     }
 
     private void returnIntent(MediaFile[] mediaFiles) {
         // bundle the MediaFiles and return them to MainActivity as intent
         Intent intent = getIntent();
         Bundle returnedFiles = new Bundle();
-        returnedFiles.putSerializable(RESULT_LIST_ACTIVITY_RESPONSE_KEY, mediaFiles);
-        intent.putExtra(RESULT_LIST_ACTIVITY_RESPONSE_KEY, returnedFiles);
+        returnedFiles.putSerializable(SEARCH_ACTIVITY_RESPONSE_KEY, mediaFiles);
+        intent.putExtra(SEARCH_ACTIVITY_RESPONSE_KEY, returnedFiles);
         // set the result
         setResult(Activity.RESULT_OK, intent);
         // finish activity

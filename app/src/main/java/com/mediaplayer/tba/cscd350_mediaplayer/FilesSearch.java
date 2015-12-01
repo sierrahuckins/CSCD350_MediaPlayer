@@ -19,7 +19,6 @@ import java.util.ArrayList;
  */
 public class FilesSearch {
 
-
     public MediaFile[] scanFileSystem(Context context) {
 
         // get content resolver from the context of the main activity

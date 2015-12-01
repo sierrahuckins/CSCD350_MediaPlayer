@@ -20,7 +20,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     // navigation drawer
     DrawerLayout drawerLayout;
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ListView nowPlayingView;
 
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
+    public static final int REQUEST_CODE_SEARCH_ACTIVITY = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerItems[0] = new DrawerItem(R.drawable.music_note_white, "Library");
         drawerItems[1] = new DrawerItem(R.drawable.search_white, "Search");
 
-                // create drawer adapter with the list of drawer items
+        // create drawer adapter with the list of drawer items
         drawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
         // set the drawer adapter on the drawer
         drawerLayoutListView.setAdapter(drawerAdapter);
@@ -89,11 +90,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // onClick for drawerLayout listView items
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent;
 
                 switch (position) {
                     case 0:
-                        Intent intent = new Intent(view.getContext(), ResultListsActivity.class);
+                        intent = new Intent(view.getContext(), ResultListsActivity.class);
                         startActivityForResult(intent, REQUEST_CODE_RESULT_LIST_ACTIVITY);
+                        break;
+                    case 1:
+                        intent = new Intent(view.getContext(), SearchActivity.class);
+                        startActivityForResult(intent, REQUEST_CODE_SEARCH_ACTIVITY);
                         break;
                 }
 
@@ -164,24 +170,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View view) {
-
-        // TODO: 11/15/2015 this is just a test to see if the media player and controller work
-        // fill the now playing form the database
-        LibraryDatabase db = new LibraryDatabase(this);
-        MediaFile[] mediaFiles = db.getMediaFiles();
-        if(mediaFiles != null) {
-            nowPlaying.clear();
-            nowPlaying.addAll(Arrays.asList(mediaFiles));
-        }
-
-        // set the music player now playing
-        mMusicPlayer.setNowPlaying(nowPlaying);
-        // call to play first item in database
-        mMusicPlayer.start();
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
@@ -235,25 +223,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-
-//    /**
-//     * Called when the media file is ready for playback.
-//     *
-//     * @param mp the MediaPlayer that is ready for playback
-//     */
-//    @Override
-//    public void onPrepared(MediaPlayer mp) {
-//        // se the media player to be controlled by the media controller
-//        mediaController.setMediaPlayer(mMusicPlayer);
-//        // attach the media controller to the media controller widget
-//        mediaController.setAnchorView(findViewById(R.id.media_controller));
-//
-//        mediaControllerHandler.post(new Runnable() {
-//            public void run() {
-//                mediaController.setEnabled(true);
-//                mediaController.show();
-//            }
-//        });
-//        mMediaPlayer.setNextMediaPlayer(mMusicPlayer);
-//    }
 }
