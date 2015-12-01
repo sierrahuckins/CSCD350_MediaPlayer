@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 
 /**
@@ -66,10 +67,12 @@ public class MediaFile implements Serializable {
         if(uri != null) {
             return uri;
         }
-        else if(uriString != null) {
-            return Uri.parse(uriString);
+        uri = Uri.parse(uriString);
+        if(uri != null) {
+            return uri;
         }
-        throw new NullPointerException("Uri is null");
+        // this should maybe be a file not found, or an IO exception
+        throw new NullPointerException("Media File Uri does not exist");
     }
 
     public void setArtist(String artist) {

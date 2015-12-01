@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // now playing view
     ArrayList<MediaFile> nowPlaying;
-    ArrayAdapter<MediaFile> nowPlayingAdatper;
+    ArrayAdapter<MediaFile> nowPlayingAdapter;
     ListView nowPlayingView;
 
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
@@ -143,11 +143,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         nowPlaying = new ArrayList<>();
 
         // get new adapter and pass it a list item layout and the text view in the list item
-        nowPlayingAdatper = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, nowPlaying);
+        nowPlayingAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, nowPlaying);
         // set the adapter on the list
         nowPlayingView = (ListView) findViewById(R.id.now_playing_list);
-        nowPlayingView.setAdapter(nowPlayingAdatper);
-        nowPlayingAdatper.notifyDataSetChanged();
+        nowPlayingView.setAdapter(nowPlayingAdapter);
+        nowPlayingAdapter.notifyDataSetChanged();
 
         // add files to now playing list
 //        nowPlaying.addAll(Arrays.asList(database.getMediaFiles()));
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mMusicPlayer.start();
 
             // update the now playing view
-            nowPlayingAdatper.notifyDataSetChanged();
+            nowPlayingAdapter.notifyDataSetChanged();
         }
     }
 

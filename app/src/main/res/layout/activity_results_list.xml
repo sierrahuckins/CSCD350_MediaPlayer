@@ -19,7 +19,8 @@
             android:text="Artists"
             android:id="@+id/btnArtists"
             android:textSize="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:singleLine="true" />
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless"
@@ -28,7 +29,8 @@
             android:text="Albums"
             android:id="@+id/btnAlbums"
             android:textSize="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:singleLine="true" />
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless"
@@ -37,7 +39,8 @@
             android:text="Playlists"
             android:id="@+id/btnPlaylists"
             android:textSize="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:singleLine="true" />
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless"
@@ -46,7 +49,8 @@
             android:text="Genre"
             android:id="@+id/btnGenre"
             android:textSize="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:singleLine="true" />
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless"
@@ -55,7 +59,8 @@
             android:text="Songs"
             android:id="@+id/btnSongs"
             android:textSize="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:singleLine="true" />
 
     </LinearLayout>
 
