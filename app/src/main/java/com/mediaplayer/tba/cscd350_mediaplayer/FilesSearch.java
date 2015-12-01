@@ -8,20 +8,18 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 /**
- * Created by Kyle on 11/4/2015.
- *
- * File Crawler for Android OS File System
- * // searches /sdcard/
+ * FileSearch.java
+ * Author: Kyle Shermer
+ * Date: 20151104
+ * Description: File crawler to recursively search android file system
+ * Revision 1
+ * Rev. Author: Bruce Emehiser
+ * Date: 20151109
+ * Description: Uses content resolver to search android file system for media files
  */
-public class FilesSearch implements FileCrawler {
+public class FilesSearch {
 
-    /**
-     * Created by Kyle on 11/4/2015.
-     * Updated by Bruce on 11/9/2015 to use ContentResolver and search for all "audio" files
-     *
-     * File Crawler for Android OS File System
-     * // searches /sdcard/
-     */
+
     public MediaFile[] scanFileSystem(Context context) {
 
         // get content resolver from the context of the main activity
