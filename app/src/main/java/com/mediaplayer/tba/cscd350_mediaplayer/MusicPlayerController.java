@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 /**
  * Created by Bruce Emehiser on 11/19/2015.
@@ -30,6 +31,8 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
     private ImageButton mRepeatButton;
 
     private SeekBar mSeekBar;
+
+    private TextView mNowPlaying;
 
     // flags
     boolean mDragging;
@@ -56,7 +59,7 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
     private void initialize() {
         // inflate the custom view and hook it to the view group
         LayoutInflater  inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.music_controller, this, true);
+        inflater.inflate(R.layout.music_player_controller, this, true);
 
         // controls
         mPlayPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
@@ -65,6 +68,8 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
         mRepeatButton = (ImageButton) findViewById(R.id.repeat_button);
 
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
+
+        mNowPlaying = (TextView) findViewById(R.id.now_playing_text_view);
 
         // set listeners
         mPlayPauseButton.setOnClickListener(this);
@@ -160,6 +165,8 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
     public void songChanged(MusicPlayer musicPlayer) {
         // update the max seek bar size
         mSeekBar.setMax(mMusicPlayer.getDuration());
+        // change the currently playing song view
+        mNowPlaying.setText(String.format("%s: %s", mContext.getString(R.string.music_player_controller_now_playing), musicPlayer.getCurrentlyPlaying()));
 
         // clear and restart the seek bar updater
         songStopped(musicPlayer);

@@ -24,11 +24,11 @@
         </activity>
         <activity
             android:name=".ResultListsActivity"
-            android:label="ResultListActivity">
+            android:label="@string/result_list_name">
         </activity>
         <activity
             android:name=".SearchActivity"
-            android:label="SearchActivity">
+            android:label="@string/search_name">
         </activity>
     </application>
 

@@ -58,6 +58,14 @@ public class MusicPlayer {
         }
     }
 
+    public String getCurrentlyPlaying() {
+        // get the song that is currently playing or paused
+        if(mNowPlaying != null && mNowPlaying.size() > 0 && mNowPlayingPosition < mNowPlaying.size()) {
+            return mNowPlaying.get(mNowPlayingPosition).getTitle();
+        }
+        return "";
+    }
+
     public void setLooping(boolean loop) {
         if(mMediaPlayer != null) {
             mMediaPlayer.setLooping(loop);

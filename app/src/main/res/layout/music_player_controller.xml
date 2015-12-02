@@ -4,6 +4,14 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/music_player_controller_now_playing"
+        android:id="@+id/now_playing_text_view"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp" />
+
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
