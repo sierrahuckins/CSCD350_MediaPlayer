@@ -17,4 +17,8 @@
 
     <!--music player controller-->
     <string name="music_player_controller_now_playing">Now Playing</string>
+    <string name="music_player_controller_play_previous_song">Play Previous Song</string>
+    <string name="music_player_controller_play_pause_song">Play/Pause Current Song</string>
+    <string name="music_player_controller_play_next_song">Play Next Song</string>
+    <string name="music_player_controller_repeat_current_song">Repeat Current Song</string>
 </resources>

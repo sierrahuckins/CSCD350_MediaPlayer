@@ -1,5 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -9,8 +9,8 @@
         android:layout_height="wrap_content"
         android:text="@string/music_player_controller_now_playing"
         android:id="@+id/now_playing_text_view"
-        android:textSize="18sp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="@dimen/text_margin"
+        android:textSize="@dimen/menu_text_size" />
 
     <SeekBar
         android:layout_width="match_parent"
@@ -28,24 +28,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/prev_button"
-            android:src="@drawable/previous" />
+            android:src="@drawable/previous"
+            android:contentDescription="@string/music_player_controller_play_previous_song" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/play_pause_button"
-            android:src="@drawable/play" />
+            android:src="@drawable/play"
+            android:contentDescription="@string/music_player_controller_play_pause_song" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/next_button"
-            android:src="@drawable/next" />
+            android:src="@drawable/next"
+            android:contentDescription="@string/music_player_controller_play_next_song" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/repeat_button"
-            android:src="@drawable/repeat_off" />
+            android:src="@drawable/repeat_off"
+            android:contentDescription="@string/music_player_controller_repeat_current_song" />
     </LinearLayout>
 </LinearLayout>
