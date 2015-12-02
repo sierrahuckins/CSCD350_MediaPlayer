@@ -27,12 +27,13 @@ public interface ISQLite {
     MediaFile[] getMediaFilesFromAlbum(String album);
     MediaFile[] getMediaFilesFromArtist(String artist);
     MediaFile[] getMediaFilesFromPlaylist(String playlist);
+    MediaFile[] getMediaFilesFromGenre(String genre);
 
     // get list of strings
     String[] getPlaylists();
     String[] getArtists();
     String[] getAlbums();
-    String[] getGenre();
+    String[] getGenres();
 
     // get list of songs
     SongData[] getSongs();

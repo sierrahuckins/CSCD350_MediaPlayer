@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 /**
@@ -19,54 +20,74 @@ import java.util.ArrayList;
  */
 public class FilesSearch {
 
-    public MediaFile[] scanFileSystem(Context context) {
+    private static String[] mediaProjection = {
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.DATA
+    };
+    private static String[] genresProjection = {
+            MediaStore.Audio.Genres.NAME,
+            MediaStore.Audio.Genres._ID
+    };
 
-        // get content resolver from the context of the main activity
+    public static MediaFile[] scanFileSystem(Context context) {
+
+        // media file databased maintained by the system
         ContentResolver contentResolver = context.getContentResolver();
-        // get the uri of the external storage (usually sdcard or partition mounted with symLink "sdcard")
-        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        // get a new cursor to move through the external entries
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+        // get a new cursor from the content resolver, of the specified fields
+        Cursor mediaCursor = contentResolver.query(uri, mediaProjection, null, null, null);
 
         // array list to contain the entries we select to use
         ArrayList<MediaFile> builderArray = new ArrayList<>();
 
-        if (cursor == null) {
+        if (mediaCursor == null) {
             // problem with getting the cursor
             return new MediaFile[] {};
-        } else if (!cursor.moveToFirst()) {
-            // there is no media on the device
+        } else if (!mediaCursor.moveToFirst()) {
+            Log.e("File Search", "media cursor is empty");
         } else {
             // get the column ids for all the necessary columns
-            int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int albumColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int genreColumn = cursor.getColumnIndex(MediaStore.Audio.GenresColumns.NAME);
-            int uriColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int idColumnIndex = mediaCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistColumn = mediaCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumColumn = mediaCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int titleColumn = mediaCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int uriColumn = mediaCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
             do {
                 // read the column data and encode into MediaFile object
-                String thisArtist = cursor.getString(artistColumn);
-                String thisAlbum = cursor.getString(albumColumn);
-                String thisTitle = cursor.getString(titleColumn);
-                Uri thisUri = Uri.parse(cursor.getString(uriColumn));
+                int thisID = Integer.parseInt(mediaCursor.getString(idColumnIndex));
+                String thisArtist = mediaCursor.getString(artistColumn);
+                String thisAlbum = mediaCursor.getString(albumColumn);
+                String thisTitle = mediaCursor.getString(titleColumn);
+                Uri thisUri = Uri.parse(mediaCursor.getString(uriColumn));
+                String thisGenre = "Unknown";
 
-                // TODO: 11/9/2015 figure out how to get the genre out of the cursor
-//                String thisGenre = cursor.getString(genreColumn);
-                String thisGenre = "Blues";
-                /*
-                new up genre curosr from the uri to move over the genre table
-                grab genres while there are genres, and append them onto a genre string
-                 */
+                // get genre
+                Uri genreUri = MediaStore.Audio.Genres.getContentUriForAudioId("external", thisID);
+                Cursor genreCursor = context.getContentResolver().query(genreUri, genresProjection, null, null, null);
+                if (genreCursor != null) {
+                    // get genre column
+                    int genreColumn = genreCursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
+
+                    // get the first genre from cursor. (ignore the rest. You can change with a do while loop, while cursor.moveToNext()
+                    if (genreCursor.moveToFirst()) {
+                        thisGenre = genreCursor.getString(genreColumn);
+                    }
+                    genreCursor.close();
+                }
 
                 // create new media file with the data
                 MediaFile mediaFile = new MediaFile(thisArtist, thisAlbum, thisTitle, thisGenre, thisUri);
                 // add media file to builder array
                 builderArray.add(mediaFile);
 
-            } while (cursor.moveToNext());
+            } while (mediaCursor.moveToNext());
         }
-
+        mediaCursor.close();
         // return array of the contents of the builder
         return builderArray.toArray(new MediaFile[builderArray.size()]);
     }

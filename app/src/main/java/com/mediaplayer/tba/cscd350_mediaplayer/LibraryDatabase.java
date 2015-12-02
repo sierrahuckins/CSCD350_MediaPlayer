@@ -177,7 +177,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     }
 
     @Override
-    public String[] getGenre() {
+    public String[] getGenres() {
         String[] select = {"DISTINCT " + GENRE};
         String where = "";
 
@@ -253,6 +253,16 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     public MediaFile[] getMediaFilesFromAlbum(String album) {
         String[] select = {"*"};
         String where = ALBUM + " =  \"" + album + "\"";
+
+        Cursor results = queryLibrary(select, where);
+
+        return constructMediaFileResults(results);
+    }
+
+    @Override
+    public MediaFile[] getMediaFilesFromGenre(String genre) {
+        String[] select = {"*"};
+        String where = GENRE + " =  \"" + genre + "\"";
 
         Cursor results = queryLibrary(select, where);
 
@@ -362,7 +372,6 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
                     results.getString(3), tmpURI);
             i ++;
         }
-
         return data;
     }
 

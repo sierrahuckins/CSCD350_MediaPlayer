@@ -8,9 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -100,48 +97,8 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
 
         // register as a long click listener. we will show a dialog box
         listResults.setOnItemLongClickListener(this);
-
-        // register as context menu listener
-//        registerForContextMenu(listResults);
-
     }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        // get mAdapter context menu information
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-        // get the index of item clicked
-        int menuItemIndex = item.getItemId();
-        // get the menu items
-        String[] menuItems = getResources().getStringArray(R.array.menu);
-        String menuItemName = menuItems[menuItemIndex];
-        // get the entry in the list view which was clicked
-        String listItemName = mCurrentList.get(info.position);
-
-        Toast.makeText(ResultListsActivity.this, "Item Clicked: " + menuItemName + " current list item: " + listItemName, Toast.LENGTH_SHORT).show();
-
-        // return true, we handled the click
-        return true;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        // if the created context menu is on the list results view
-        if (v.getId()==R.id.listResults) {
-            // get mAdapter view context menu information
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-            // set menu header to be the current position title
-            menu.setHeaderTitle(mCurrentList.get(info.position));
-            // menu items as defined by resource array
-            String[] menuItems = getResources().getStringArray(R.array.menu);
-            // add items to menu
-            for (int i = 0; i < menuItems.length; i++) {
-                menu.add(Menu.NONE, i, i, menuItems[i]);
-            }
-        }
-    }
-
-    //onClick listener for buttons
     @Override
     public void onClick(View v) {
 
@@ -164,13 +121,13 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.btnGenre:
                 //retrieve genres from database
-                // TODO: 11/15/2015 uncomment this when database is working
-//                temp = mDB.getGenres();
-//                mCurrentDisplayState = Display.GENRES;
+                temp = mDB.getGenres();
+                mCurrentDisplayState = Display.GENRES;
                 break;
             case R.id.btnSongs:
                 //retrieve songs from database
                 temp = mDB.getSongTitles();
+                // update current list of media files
                 mCurrentListMediaFiles.clear();
                 mCurrentListMediaFiles.addAll(Arrays.asList(mDB.getMediaFiles()));
                 mCurrentDisplayState = Display.SONGS;
@@ -231,9 +188,26 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
             returnIntent(temp);
         }
         else if (mCurrentDisplayState == Display.PLAYLISTS) {
-            MediaFile[] mediaFiles = mDB.getMediaFilesFromPlaylist(clicked);
+            MediaFile[] temp = mDB.getMediaFilesFromPlaylist(clicked);
             // return to main activity
-            returnIntent(mediaFiles);
+            returnIntent(temp);
+        }
+        else if(mCurrentDisplayState == Display.GENRES) {
+
+            // get all the songs in that album
+            mCurrentListMediaFiles.clear();
+            mCurrentListMediaFiles.addAll(Arrays.asList(mDB.getMediaFilesFromGenre(clicked)));
+
+            // add to current list
+            mCurrentList.clear();
+            for(MediaFile m : mCurrentListMediaFiles) {
+                mCurrentList.add(m.getTitle());
+            }
+
+            // update current view
+            mCurrentDisplayState = Display.SONGS;
+            //update Display
+            mAdapter.notifyDataSetChanged();
         }
     }
 

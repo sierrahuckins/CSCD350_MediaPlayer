@@ -3,8 +3,6 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
         Runnable fileSearchAndAddThread = new Runnable() {
             @Override
             public void run() {
-                FilesSearch filesSearch = new FilesSearch();
-                MediaFile[] mediaFiles = filesSearch.scanFileSystem(getApplicationContext());
+                MediaFile[] mediaFiles = FilesSearch.scanFileSystem(getApplicationContext());
 
                 // add all the mediafiles we just found to our database
                 // TODO: 11/9/2015 make this run on first launch, on a storage isChanged listener on the ContentResolver, or when the users says to
@@ -164,14 +160,16 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-        if(requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY || requestCode == REQUEST_CODE_SEARCH_ACTIVITY && resultCode == Activity.RESULT_OK) {
+        if((requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY || requestCode == REQUEST_CODE_SEARCH_ACTIVITY) && resultCode == Activity.RESULT_OK) {
             // get the array of media files from the intent
             Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
             Object[] ara = (Object[]) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
             // clear now playing list and add new items
             nowPlaying.clear();
-            for( Object o : ara) {
-                nowPlaying.add((MediaFile) o);
+            if(ara != null) {
+                for (Object o : ara) {
+                    nowPlaying.add((MediaFile) o);
+                }
             }
             // set the now playing list in the music player
             mMusicPlayer.setNowPlaying(nowPlaying);
