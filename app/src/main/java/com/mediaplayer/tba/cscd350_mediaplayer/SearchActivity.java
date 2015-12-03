@@ -25,83 +25,102 @@ import java.util.Arrays;
 *Results are returned as a list on screen. User can then choose result from that list to be returned to main screen for playing.
 **/
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+    //gui references
+    private Button searchBtn;
+    private EditText searchField;
+    private ListView listResults;
 
-    EditText searchField;
-
-    //holds the array list of MediaFiles that will be returned to MainActivity
-//    private MediaFile[] mediaFiles;
-
-    //holds the current list of strings that is being displayed
-    private ArrayList<String> currentListStrings;
-    private ArrayList<MediaFile> currentListMediaFiles;
-
-    private ArrayAdapter<String> adapter;
-    private LibraryDatabase db = new LibraryDatabase(this);
-
-    // activity intent request response key
+    //intent request response key
     public static final String SEARCH_ACTIVITY_RESPONSE_KEY = "response_key";
 
-    @SuppressWarnings("unchecked")
+    //holds the current list of strings that is being displayed
+    //and the media files associated with those strings
+    private ArrayList<String> currentListStrings = new ArrayList<>();
+    private ArrayList<MediaFile> currentListMediaFiles = new ArrayList<>();
+
+    //adapter for display
+    private ArrayAdapter<String> adapter;
+
+    //reference to app's internal database
+    private LibraryDatabase db = new LibraryDatabase(this);
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        //initialize references to all buttons
-        Button searchBtn = (Button)findViewById(R.id.btnSearch);
-        EditText searchTxtFld = (EditText)findViewById(R.id.txtfldSearch);
-        searchField = searchTxtFld;
-        ListView listResults = (ListView)findViewById(R.id.listResults);
+        //initialize references to gui elements
+        initializeGUIReferences();
 
         //set on click listeners for buttons and clickable display
-        searchBtn.setOnClickListener(this);
-        listResults.setOnItemClickListener(this);
-
-        // create current list
-        currentListStrings = new ArrayList<>();
-        currentListMediaFiles = new ArrayList<>();
+        initializeOnClickListeners();
 
         //update list if there is saved instance data from before
         if (savedInstanceState != null) {
-            ArrayList<String> temp = (ArrayList<String>) savedInstanceState.getSerializable("currentListStrings");
-            // TODO: 11/22/2015 get currentDisplay as well
-            if(temp != null) {
-                currentListStrings.addAll(temp);
-            }
+            updateSavedInstanceState(savedInstanceState);
         }
 
         // get new adapter and pass it a list item layout and the text view in the list item
         adapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, currentListStrings);
+
         // set the adapter on the list in content_resultslistactivity
         listResults.setAdapter(adapter);
     }
 
-    //onClick listener for buttons
+    private void updateSavedInstanceState(Bundle savedInstanceState) {
+        //update saved strings list data and mediaFiles list data
+        currentListStrings.addAll((ArrayList<String>) savedInstanceState.getSerializable("currentListStrings"));
+        currentListMediaFiles.addAll((ArrayList<MediaFile>) savedInstanceState.getSerializable("currentListMediaFiles"));
+    }
+
+    private void initializeOnClickListeners() {
+        searchBtn.setOnClickListener(this);
+        listResults.setOnItemClickListener(this);
+    }
+
+    private void initializeGUIReferences() {
+        searchBtn = (Button)findViewById(R.id.btnSearch);
+        searchField = (EditText)findViewById(R.id.txtfldSearch);
+        listResults = (ListView)findViewById(R.id.listResults);
+    }
+
+    //onClick listener for button
     @Override
     public void onClick(View v) {
+        //get value to be used as search parameter from text field
         String searchValue = String.valueOf(searchField.getText().toString());
 
+        //show toast if user tried to search for nothing
         if (searchValue.equals("")) {
             Toast.makeText(this, "Please enter a search request above!", Toast.LENGTH_LONG).show();
         }
+        //else show results from database
         else {
             //retrieve results from database
             MediaFile[] mediaFiles = db.search(searchValue);
 
-            // add to list of media files
-            currentListMediaFiles.clear();
-            currentListMediaFiles.addAll(Arrays.asList(mediaFiles));
-
-            // make array of string titles of media files
-            String[] tempList = new String[mediaFiles.length];
-            for (int x = 0; x < mediaFiles.length; x++) {
-                tempList[x] = mediaFiles[x].toString();
-            }
-
-            // update displayed list via adapter
-            currentListStrings.clear();
-            currentListStrings.addAll(Arrays.asList(tempList));
-            adapter.notifyDataSetChanged();
+            //update media files and display
+            updateMediaFiles(mediaFiles);
+            updateDisplay(mediaFiles);
         }
+    }
+
+    private void updateMediaFiles(MediaFile[] mediaFiles) {
+        //add to list of media files
+        currentListMediaFiles.clear();
+        currentListMediaFiles.addAll(Arrays.asList(mediaFiles));
+    }
+
+    private void updateDisplay(MediaFile[] mediaFiles) {
+        // update displayed list via adapter
+        currentListStrings.clear();
+
+        //copy new list to display list
+        for (int x = 0; x < mediaFiles.length; x++) {
+            currentListStrings.add(mediaFiles[x].toString());
+        }
+
+        //notify adapter so display gets updated
+        adapter.notifyDataSetChanged();
     }
 
     //onClick listener for clickable display
@@ -109,6 +128,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //get sublist that contains media files beyond the position clicked
         MediaFile[] temp = new MediaFile[currentListMediaFiles.size() - position];
+
         for(int i = 0; i < temp.length; i ++) {
             temp[i] = currentListMediaFiles.get(i + position);
         }
@@ -118,13 +138,17 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void returnIntent(MediaFile[] mediaFiles) {
-        // bundle the MediaFiles and return them to MainActivity as intent
-        Intent intent = getIntent();
+        // bundle the MediaFiles
         Bundle returnedFiles = new Bundle();
         returnedFiles.putSerializable(SEARCH_ACTIVITY_RESPONSE_KEY, mediaFiles);
+
+        //create intent to return and put bundle into  it
+        Intent intent = getIntent();
         intent.putExtra(SEARCH_ACTIVITY_RESPONSE_KEY, returnedFiles);
+
         // set the result
         setResult(Activity.RESULT_OK, intent);
+
         // finish activity
         finish();
     }
@@ -133,6 +157,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        //save what is currently being displayed so it can be reinitialized after state change
         outState.putSerializable("currentListStrings", currentListStrings);
+
+        //save current media files that go with display for later reinitialization
+        outState.putSerializable("currentMediaFiles", currentListMediaFiles);
     }
 }
