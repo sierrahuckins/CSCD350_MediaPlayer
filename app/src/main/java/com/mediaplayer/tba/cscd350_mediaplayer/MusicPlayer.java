@@ -3,9 +3,12 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.nfc.Tag;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -64,6 +67,14 @@ public class MusicPlayer {
             return mNowPlaying.get(mNowPlayingPosition).getTitle();
         }
         return "";
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<MediaFile> getNowPlaying() {
+        if(mNowPlaying != null) {
+            return (ArrayList<MediaFile>) mNowPlaying.clone();
+        }
+        return new ArrayList<>();
     }
 
     public void setLooping(boolean loop) {

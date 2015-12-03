@@ -6,10 +6,14 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Bruce Emehiser on 11/19/2015.
@@ -32,7 +36,12 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
 
     private SeekBar mSeekBar;
 
-    private TextView mNowPlaying;
+    private TextView mNowPlayingTextView;
+
+    // now playing view
+    ArrayList<MediaFile> mNowPlayingList;
+    ArrayAdapter<MediaFile> mNowPlayingAdapter;
+    ListView mNowPlayingListView;
 
     // flags
     boolean mDragging;
@@ -69,8 +78,6 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
 
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
 
-        mNowPlaying = (TextView) findViewById(R.id.now_playing_text_view);
-
         // set listeners
         mPlayPauseButton.setOnClickListener(this);
         mPrevButton.setOnClickListener(this);
@@ -79,6 +86,19 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
 
         // set seek bar changed listener
         mSeekBar.setOnSeekBarChangeListener(this);
+
+        // initialize currently playing
+        mNowPlayingTextView = (TextView) findViewById(R.id.now_playing_text_view);
+
+        // initialize now playing
+        mNowPlayingList = new ArrayList<>();
+
+        // get new adapter and pass it a list item layout and the text view in the list item
+        mNowPlayingAdapter = new ArrayAdapter<>(mContext, R.layout.list_item, R.id.list_entry, mNowPlayingList);
+        // set the adapter on the list
+        mNowPlayingListView = (ListView) findViewById(R.id.now_playing_list);
+        mNowPlayingListView.setAdapter(mNowPlayingAdapter);
+        mNowPlayingAdapter.notifyDataSetChanged();
     }
 
     public void setMusicPlayer(MusicPlayer musicPlayer) {
@@ -166,7 +186,7 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
         // update the max seek bar size
         mSeekBar.setMax(mMusicPlayer.getDuration());
         // change the currently playing song view
-        mNowPlaying.setText(String.format("%s: %s", mContext.getString(R.string.music_player_controller_now_playing), musicPlayer.getCurrentlyPlaying()));
+        mNowPlayingTextView.setText(String.format("%s: %s", mContext.getString(R.string.music_player_controller_now_playing), musicPlayer.getCurrentlyPlaying()));
 
         // clear and restart the seek bar updater
         songStopped(musicPlayer);

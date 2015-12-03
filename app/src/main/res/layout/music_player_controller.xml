@@ -2,14 +2,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/now_playing_list"
+        android:choiceMode="singleChoice" />
 
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/music_player_controller_now_playing"
         android:id="@+id/now_playing_text_view"
         android:layout_marginTop="@dimen/text_margin"
+        android:singleLine="true"
         android:textSize="@dimen/menu_text_size" />
 
     <SeekBar

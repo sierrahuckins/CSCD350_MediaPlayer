@@ -20,13 +20,6 @@
         <!--add more items to the main body linear layout here-->
         <!--button-->
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/now_playing_list"
-            android:choiceMode="none"
-            android:layout_weight="1" />
-
         <com.mediaplayer.tba.cscd350_mediaplayer.MusicPlayerController
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

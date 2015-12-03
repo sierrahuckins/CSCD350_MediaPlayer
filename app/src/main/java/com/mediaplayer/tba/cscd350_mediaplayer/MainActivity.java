@@ -3,6 +3,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,21 +21,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     // navigation drawer
-    DrawerLayout drawerLayout;
-    DrawerAdapter drawerAdapter;
-    ListView drawerLayoutListView;
-    ActionBarDrawerToggle actionBarDrawerToggle;
-    LibraryDatabase database;
+    DrawerLayout mDrawerLayout;
+    DrawerAdapter mDrawerAdapter;
+    ListView mDrawerLayoutListView;
+    ActionBarDrawerToggle mActionBarDrawerToggle;
 
     // music player
     MusicPlayer mMusicPlayer;
     // music player controller
     MusicPlayerController mMusicPlayerController;
-
-    // now playing view
-    ArrayList<MediaFile> nowPlaying;
-    ArrayAdapter<MediaFile> nowPlayingAdapter;
-    ListView nowPlayingView;
 
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
     public static final int REQUEST_CODE_SEARCH_ACTIVITY = 2;
@@ -46,28 +41,28 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // create a new instance of the database
-        if(database == null)
-            database = new LibraryDatabase(this);
+        // sync with database
+        syncDatabase();
 
-        // call the file search to search for files in the system
-        Runnable fileSearchAndAddThread = new Runnable() {
-            @Override
-            public void run() {
-                MediaFile[] mediaFiles = FilesSearch.scanFileSystem(getApplicationContext());
+        // set up navigation drawer
+        initializeDrawer(toolbar);
 
-                // add all the mediafiles we just found to our database
-                // TODO: 11/9/2015 make this run on first launch, on a storage isChanged listener on the ContentResolver, or when the users says to
-                database.populateDatabase(mediaFiles); // if this runs every launch, it will produce a zillion errors because of database collision
-            }
-        };
-        // run the thread
-        fileSearchAndAddThread.run();
 
+
+        // create music player
+        mMusicPlayer = new MusicPlayer(this);
+        // create music player controller
+        mMusicPlayerController = (MusicPlayerController) findViewById(R.id.music_controller);
+        // set controller on music player
+        mMusicPlayerController.setMusicPlayer(mMusicPlayer);
+
+    }
+
+    private void initializeDrawer(final Toolbar toolbar) {
         // get the drawer layout
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         // get the drawer list view
-        drawerLayoutListView = (ListView) findViewById(R.id.left_drawer);
+        mDrawerLayoutListView = (ListView) findViewById(R.id.left_drawer);
 
         // add drawer item to drawer item list view
         // create array
@@ -77,13 +72,13 @@ public class MainActivity extends AppCompatActivity {
         drawerItems[1] = new DrawerItem(R.drawable.search_white, "Search");
 
         // create drawer adapter with the list of drawer items
-        drawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
+        mDrawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
         // set the drawer adapter on the drawer
-        drawerLayoutListView.setAdapter(drawerAdapter);
+        mDrawerLayoutListView.setAdapter(mDrawerAdapter);
 
         // create item click listener
         ListView.OnItemClickListener onItemClickListener = new ListView.OnItemClickListener() {
-            // onClick for drawerLayout listView items
+            // onClick for mDrawerLayout listView items
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent;
@@ -97,18 +92,22 @@ public class MainActivity extends AppCompatActivity {
                         intent = new Intent(view.getContext(), SearchActivity.class);
                         startActivityForResult(intent, REQUEST_CODE_SEARCH_ACTIVITY);
                         break;
+                    case 3:
+                        // sync databse
+                        syncDatabase();
+                        break;
                 }
 
                 // close the drawer layout once an item is clicked
-                drawerLayout.closeDrawers();
+                mDrawerLayout.closeDrawers();
             }
         };
         // set this as an onClick listener for the drawer items
-        drawerLayoutListView.setOnItemClickListener(onItemClickListener);
+        mDrawerLayoutListView.setOnItemClickListener(onItemClickListener);
 
         // this is the animaged toggle button which opens and closes the drawer
         // set action bar drawer toggle
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_closed) {
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_closed) {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
@@ -124,36 +123,31 @@ public class MainActivity extends AppCompatActivity {
         };
 
         // set drawer layout as a listener on action bar drawer toggle
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
         ActionBar actionBar = getSupportActionBar();
         // set back button state
         if(actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
         // sync state
-        actionBarDrawerToggle.syncState();
+        mActionBarDrawerToggle.syncState();
+    }
 
-        // initialize now playing
-        nowPlaying = new ArrayList<>();
+    private void syncDatabase() {
+        // create a new instance of the database
+        final LibraryDatabase libraryDatabase = new LibraryDatabase(this);
 
-        // get new adapter and pass it a list item layout and the text view in the list item
-        nowPlayingAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, nowPlaying);
-        // set the adapter on the list
-        nowPlayingView = (ListView) findViewById(R.id.now_playing_list);
-        nowPlayingView.setAdapter(nowPlayingAdapter);
-        nowPlayingAdapter.notifyDataSetChanged();
+        // call the file search to search for files in the system
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                MediaFile[] mediaFiles = FilesSearch.scanFileSystem(getApplicationContext());
 
-        // add files to now playing list
-//        nowPlaying.addAll(Arrays.asList(database.getMediaFiles()));
-
-        // create music player
-        mMusicPlayer = new MusicPlayer(this);
-        // set now playing list on music player
-//        mMusicPlayer.setNowPlaying(nowPlaying);
-//        // create music player controller
-        mMusicPlayerController = (MusicPlayerController) findViewById(R.id.music_controller);
-        // set controller on music player
-        mMusicPlayerController.setMusicPlayer(mMusicPlayer);
-
+                libraryDatabase.populateDatabase(mediaFiles); // if this runs every launch, it will produce a zillion errors because of database collision
+                // add all the mediafiles we just found to our database
+           }
+        };
+        // run the thread
+        runnable.run();
     }
 
     @Override
@@ -165,26 +159,23 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
             Object[] ara = (Object[]) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
             // clear now playing list and add new items
-            nowPlaying.clear();
+            ArrayList<MediaFile> temp = new ArrayList<>();
             if(ara != null) {
                 for (Object o : ara) {
-                    nowPlaying.add((MediaFile) o);
+                    temp.add((MediaFile) o);
                 }
             }
             // set the now playing list in the music player
-            mMusicPlayer.setNowPlaying(nowPlaying);
+            mMusicPlayer.setNowPlaying(temp);
             // star the media player playing
             mMusicPlayer.start();
-
-            // update the now playing view
-            nowPlayingAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = drawerLayout.isDrawerOpen(drawerLayoutListView);
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerLayoutListView);
         // if the drawer is open, hide the button settings
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
