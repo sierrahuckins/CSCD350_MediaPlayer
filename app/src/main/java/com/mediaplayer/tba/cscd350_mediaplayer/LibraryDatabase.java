@@ -65,16 +65,16 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         else
             return false;
 
-        long result = -1;
+        boolean result;
 
         try {
-            result = db.insert(LIBRARY_TABLE, null, contentValues);
+            result = db.insert(LIBRARY_TABLE, null, contentValues) != -1;
         }
         catch(SQLiteConstraintException e){
             return false; //item already in database
         }
 
-        return result != -1;
+        return result;
     }
 
     @Override
@@ -291,15 +291,16 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     @Override
     public MediaFile[] search(String search) {
-        String[] select = {"*"};
-//        String where = "Concat(title, '', artist, '', album, ' '," +
-//                " genre) like \"%"+ search +"%\"";
-        String where = " (" + TITLE + " || " + ARTIST + " || " + ALBUM + " || " + GENRE +") LIKE \"%"+ search +"%\"";
 
+        SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor results = queryLibrary(select, where);
+        String table = LIBRARY_TABLE;
+        String[] columnsToReturn = { "*" };
+        String selection = "(\"" + TITLE + "\" || \"" + ARTIST + "\" || \"" + ALBUM + "\" || \"" + GENRE + "\") LIKE ?";
+        String[] selectionArgs = { "%" + search + "%" }; // matched to "?" in selection
+        Cursor cursor = db.query(table, columnsToReturn, selection, selectionArgs, null, null, null);
 
-        return constructMediaFileResults(results);
+        return constructMediaFileResults(cursor);
     }
 
     private Cursor queryLibrary(String[] select, String where) {

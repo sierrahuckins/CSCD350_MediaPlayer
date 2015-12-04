@@ -27,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     // music player controller
     MusicPlayerController mMusicPlayerController;
 
+    // database sync
+    FileSearch mFileSearch;
+
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
     public static final int REQUEST_CODE_SEARCH_ACTIVITY = 2;
 
@@ -36,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // sync with database
-        syncDatabase();
 
         // set up navigation drawer
         initializeDrawer(toolbar);
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         intent = new Intent(view.getContext(), SearchActivity.class);
                         startActivityForResult(intent, REQUEST_CODE_SEARCH_ACTIVITY);
                         break;
-                    case 3:
+                    case 2:
                         // sync database
                         syncDatabase();
                         break;
@@ -123,21 +123,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void syncDatabase() {
-        // create a new instance of the database
-        final LibraryDatabase libraryDatabase = new LibraryDatabase(this);
 
-        // call the file search to search for files in the system
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                MediaFile[] mediaFiles = FilesSearch.scanFileSystem(getApplicationContext());
-
-                libraryDatabase.populateDatabase(mediaFiles); // if this runs every launch, it will produce a zillion errors because of database collision
-                // add all the mediafiles we just found to our database
-           }
-        };
-        // run the thread
-        runnable.run();
+        if(mFileSearch == null) {
+            // create new file search
+            mFileSearch = new FileSearch(getBaseContext());
+        }
+        // run file search
+        mFileSearch.doInBackground(null, null, null);
     }
 
     @Override

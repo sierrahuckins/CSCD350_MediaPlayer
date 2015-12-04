@@ -4,10 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import java.util.ArrayList;
 /**
  * FileSearch.java
  * Author: Kyle Shermer
@@ -17,8 +17,14 @@ import java.util.ArrayList;
  * Rev. Author: Bruce Emehiser
  * Date: 20151109
  * Description: Uses content resolver to search android file system for media files
+ * Revision 2
+ * Rev. Author: Bruce Emehiser
+ * Date: 20151203
+ * Description: Uses AsyncTask to remove gui lag
  */
-public class FilesSearch {
+public class FileSearch extends AsyncTask<Void, Void, Void> {
+
+    Context mContext;
 
     private static String[] mediaProjection = {
             MediaStore.Audio.Media._ID,
@@ -27,26 +33,35 @@ public class FilesSearch {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.DATA
     };
+
     private static String[] genresProjection = {
             MediaStore.Audio.Genres.NAME,
             MediaStore.Audio.Genres._ID
     };
 
-    public static MediaFile[] scanFileSystem(Context context) {
+    public FileSearch(Context context) {
+        mContext = context;
+    }
+
+    @Override
+    protected Void doInBackground(Void... objects) {
+
+        if (mContext == null)
+            throw new NullPointerException("Context cannot be null");
+
+        // library database to write to
+        LibraryDatabase database = new LibraryDatabase(mContext);
 
         // media file databased maintained by the system
-        ContentResolver contentResolver = context.getContentResolver();
+        ContentResolver contentResolver = mContext.getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
         // get a new cursor from the content resolver, of the specified fields
         Cursor mediaCursor = contentResolver.query(uri, mediaProjection, null, null, null);
 
-        // array list to contain the entries we select to use
-        ArrayList<MediaFile> builderArray = new ArrayList<>();
-
         if (mediaCursor == null) {
             // problem with getting the cursor
-            return new MediaFile[] {};
+            return null;
         } else if (!mediaCursor.moveToFirst()) {
             Log.e("File Search", "media cursor is empty");
         } else {
@@ -68,7 +83,7 @@ public class FilesSearch {
 
                 // get genre
                 Uri genreUri = MediaStore.Audio.Genres.getContentUriForAudioId("external", thisID);
-                Cursor genreCursor = context.getContentResolver().query(genreUri, genresProjection, null, null, null);
+                Cursor genreCursor = mContext.getContentResolver().query(genreUri, genresProjection, null, null, null);
                 if (genreCursor != null) {
                     // get genre column
                     int genreColumn = genreCursor.getColumnIndex(MediaStore.Audio.Genres.NAME);
@@ -82,13 +97,15 @@ public class FilesSearch {
 
                 // create new media file with the data
                 MediaFile mediaFile = new MediaFile(thisArtist, thisAlbum, thisTitle, thisGenre, thisUri);
-                // add media file to builder array
-                builderArray.add(mediaFile);
+
+                // add media file to the database
+                database.addMediaFile(mediaFile);
 
             } while (mediaCursor.moveToNext());
         }
         mediaCursor.close();
-        // return array of the contents of the builder
-        return builderArray.toArray(new MediaFile[builderArray.size()]);
+
+        // return Void
+        return null;
     }
 }
