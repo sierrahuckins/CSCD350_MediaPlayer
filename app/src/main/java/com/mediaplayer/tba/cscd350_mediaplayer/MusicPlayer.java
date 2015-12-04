@@ -3,12 +3,10 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.nfc.Tag;
-import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -21,16 +19,16 @@ public class MusicPlayer {
     // song changed listener
     public interface OnMediaChangedListener {
 
-        void songChanged(MusicPlayer musicPlayer);
-        void songStopped(MusicPlayer musicPlayer);
         void songStarted(MusicPlayer musicPlayer);
+        void songStopped(MusicPlayer musicPlayer);
+        void songEnded(MusicPlayer musicPlayer);
     }
 
     // notification types
     private enum Notification {
-        SONG_CHANGED,
-        SONG_PAUSED,
-        SONG_RESUMED
+        SONG_STARTED,
+        SONG_STOPPED,
+        SONG_ENDED
     }
 
     // array of listeners
@@ -42,39 +40,9 @@ public class MusicPlayer {
     // instance of a media player
     private MediaPlayer mMediaPlayer;
 
-    // now playing list
-    private ArrayList<MediaFile> mNowPlaying;
-    private int mNowPlayingPosition;
-
     public MusicPlayer(Context context) {
         mContext = context;
-        mNowPlaying = new ArrayList<>();
-        mNowPlayingPosition = 0;
         listeners = new ArrayList<>();
-    }
-
-    public void setNowPlaying(final ArrayList<MediaFile> nowPlaying) {
-        // set the now playing list
-        if(nowPlaying != null) {
-            mNowPlaying = nowPlaying;
-            mNowPlayingPosition = 0;
-        }
-    }
-
-    public String getCurrentlyPlaying() {
-        // get the song that is currently playing or paused
-        if(mNowPlaying != null && mNowPlaying.size() > 0 && mNowPlayingPosition < mNowPlaying.size()) {
-            return mNowPlaying.get(mNowPlayingPosition).getTitle();
-        }
-        return "";
-    }
-
-    @SuppressWarnings("unchecked")
-    public ArrayList<MediaFile> getNowPlaying() {
-        if(mNowPlaying != null) {
-            return (ArrayList<MediaFile>) mNowPlaying.clone();
-        }
-        return new ArrayList<>();
     }
 
     public void setLooping(boolean loop) {
@@ -88,96 +56,37 @@ public class MusicPlayer {
     }
 
     public void start() {
-        // media player is stopped
-        if(mMediaPlayer == null) {
-            begin();
-        }
         // media player is paused
-        else if(! mMediaPlayer.isPlaying()) {
+        if(mMediaPlayer != null && ! mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
 
             // notify listeners
-            notifyListeners(Notification.SONG_RESUMED);
+            notifyListeners(Notification.SONG_STARTED);
         }
     }
 
-    public void next() {
-        // check for empty now playing list
-        if(mNowPlaying.isEmpty()) {
-            return;
-        }
-        // go to next position
-        mNowPlayingPosition++;
-        // if we are before the end of the now playing list
-        if (mNowPlayingPosition < mNowPlaying.size()) {
-            // begin playback at position
-            begin();
-        }
-        else {
-            // reset the now playing position to now playing beginning
-            mNowPlayingPosition = 0;
-        }
-    }
+    public void setNowPlaying(MediaFile nowPlaying) {
 
-    public void prev() {
-        // go to previous position
-        mNowPlayingPosition --;
-        // if we are the first song
-        if(mNowPlayingPosition < 0) {
-            mNowPlayingPosition = 0;
-        }
-        // begin playing at position
-        begin();
-    }
-
-    private void begin() {
-
-        // check for null now playing list
-        if(mNowPlaying == null) {
-            return;
-        }
-        // check for empty now playing list
-        if(mNowPlaying.size() == 0) {
-            return;
-        }
-        // check for null player
         if(mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
         }
-
-        // get next media file
-        MediaFile mediaFile = mNowPlaying.get(mNowPlayingPosition);
-
         // reset media player, prepare the media player and start it
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(mContext, mediaFile.getUri());
+            mMediaPlayer.setDataSource(mContext, nowPlaying.getUri());
             mMediaPlayer.prepare();
         } catch (IOException e) {
-            Log.e("IOException", "Cannot play media file," + mediaFile.toString() + " Invalid Uri (or something like that)");
-            return;
+            Log.e("MusicPlayer", "Error setting mediaplayer data source, Uri has problems");
         }
+
         // on completion of this song's playback
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                // if we are looping
-                if(mMediaPlayer.isLooping()) {
-                    // begin current song
-                    begin();
-                }
-                else {
-                    // play the next song
-                    next();
-                }
+                notifyListeners(Notification.SONG_ENDED);
             }
         });
-        // start the song playing
-        mMediaPlayer.start();
-
-        // notify listeners
-        notifyListeners(Notification.SONG_CHANGED);
     }
 
     public void pause() {
@@ -190,14 +99,17 @@ public class MusicPlayer {
             mMediaPlayer.pause();
 
             // notify listeners
-            notifyListeners(Notification.SONG_PAUSED);
+            notifyListeners(Notification.SONG_STOPPED);
         }
     }
 
     public void stop() {
-        mMediaPlayer.stop();
-        mMediaPlayer.release();
-        mMediaPlayer = null;
+        if(mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+            notifyListeners(Notification.SONG_STOPPED);
+        }
     }
 
     public boolean isPlaying() {
@@ -236,21 +148,20 @@ public class MusicPlayer {
         // update listeners
         switch (notification) {
 
-            case SONG_CHANGED:
-                for (OnMediaChangedListener listener : listeners) {
-                    listener.songChanged(this);
-                }
-                break;
-            case SONG_PAUSED:
-                for (OnMediaChangedListener listener : listeners) {
-                    listener.songStopped(this);
-                }
-                break;
-            case SONG_RESUMED:
+            case SONG_STARTED:
                 for (OnMediaChangedListener listener : listeners) {
                     listener.songStarted(this);
                 }
                 break;
+            case SONG_STOPPED:
+                for (OnMediaChangedListener listener : listeners) {
+                    listener.songStopped(this);
+                }
+                break;
+            case SONG_ENDED:
+                for(OnMediaChangedListener listener : listeners) {
+                    listener.songEnded(this);
+                }
         }
     }
 }

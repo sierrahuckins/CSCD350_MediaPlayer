@@ -47,14 +47,8 @@ public class MainActivity extends AppCompatActivity {
         // set up navigation drawer
         initializeDrawer(toolbar);
 
-
-
-        // create music player
-        mMusicPlayer = new MusicPlayer(this);
         // create music player controller
         mMusicPlayerController = (MusicPlayerController) findViewById(R.id.music_controller);
-        // set controller on music player
-        mMusicPlayerController.setMusicPlayer(mMusicPlayer);
 
     }
 
@@ -166,9 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             // set the now playing list in the music player
-            mMusicPlayer.setNowPlaying(temp);
-            // star the media player playing
-            mMusicPlayer.start();
+            mMusicPlayerController.setNowPlayingList(temp);
+            mMusicPlayerController.start();
         }
     }
 

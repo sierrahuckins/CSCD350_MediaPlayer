@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Edited Getters on 11/7/2015 to account for null strings - Andrew Macy
  * Wrapper for data which describes a media file.
  */
-public class MediaFile implements Serializable, Cloneable {
+public class MediaFile implements Serializable {
 
     private String artist;
     private String album;
@@ -31,6 +31,10 @@ public class MediaFile implements Serializable, Cloneable {
     }
 
     public MediaFile(String artist, String album, String title, String genre, Uri uri) {
+
+        if(artist == null || album == null || title == null || genre == null || uri == null) {
+            throw new NullPointerException("Incoming parameters cannot be null");
+        }
         this.artist = artist;
         this.album = album;
         this.title = title;
@@ -99,17 +103,5 @@ public class MediaFile implements Serializable, Cloneable {
     public String toString() {
 //        return artist + " " + album + " " + title + " " + genre + " " + uri;
         return title;
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-
-        MediaFile clone = (MediaFile) super.clone();
-        clone.setAlbum(album);
-        clone.setArtist(artist);
-        clone.setTitle(title);
-        clone.setGenre(genre);
-        clone.setUri(uri);
-        return clone;
     }
 }

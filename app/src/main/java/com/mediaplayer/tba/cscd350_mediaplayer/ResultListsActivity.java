@@ -230,143 +230,33 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         switch (mCurrentDisplayState) {
 
             case ARTISTS:
-                selectPlaylistDialog(mDB.getMediaFilesFromArtist(mCurrentList.get(position)));
+                MusicPlayerDialog.selectPlaylistDialog(ResultListsActivity.this, mDB, mDB.getMediaFilesFromArtist(mCurrentList.get(position)));
                 break;
             case ALBUMS:
-                selectPlaylistDialog(mDB.getMediaFilesFromAlbum(mCurrentList.get(position)));
+                MusicPlayerDialog.selectPlaylistDialog(ResultListsActivity.this, mDB, mDB.getMediaFilesFromAlbum(mCurrentList.get(position)));
                 break;
             case SONGS:
                 MediaFile[] temp = new MediaFile[1];
                 temp[0] = mCurrentListMediaFiles.get(position);
-                selectPlaylistDialog(temp);
+                MusicPlayerDialog.selectPlaylistDialog(ResultListsActivity.this, mDB, temp);
                 break;
             case GENRES:
                 Toast.makeText(ResultListsActivity.this, "Genres not yet implemented", Toast.LENGTH_SHORT).show();
                 break;
             case PLAYLISTS:
-                removePlaylistDialog(position);
+
+                String playlist = mCurrentList.get(position);
+                // prompt for user confirmation
+                MusicPlayerDialog.removePlaylistDialog(ResultListsActivity.this, mDB, playlist);
+                // remove from list view
+                mCurrentList.remove(playlist);
+                // notiy mAdapter of change
+                mAdapter.notifyDataSetChanged();
                 break;
         }
 
         // return we handled the event
         return true;
-    }
-
-    private void selectPlaylistDialog(final MediaFile[] toAdd) {
-
-        if(toAdd == null) {
-            Log.e("TAG", "toAdd is null in selectPlaylistDialog");
-            return;
-        }
-        // build a new dialog box for choosing which playlist to add the item(s) to
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Select Playlist");
-        builder.setNeutralButton("New", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // prompt for user input in a new dialog
-                addNewPlaylistDialog(toAdd);
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // cancel dialog
-                dialog.cancel();
-            }
-        });
-        builder.setItems(mDB.getPlaylists(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // get playlist name
-                String playlist = mDB.getPlaylists()[which];
-                // add each media file to playlist
-                for (MediaFile m : toAdd) {
-                    mDB.addFileToPlaylist(playlist, m);
-                }
-            }
-        });
-        // show
-        builder.show();
-    }
-
-    private void addNewPlaylistDialog(final MediaFile[] toAdd) {
-
-        if(toAdd == null) {
-            throw new NullPointerException("toAdd is null in addNewPlaylistDialog");
-        }
-
-        // building new dialog for playlist entry
-        AlertDialog.Builder builder = new AlertDialog.Builder(ResultListsActivity.this);
-        builder.setTitle("Title");
-
-        // Set up the input
-        final EditText input = new EditText(ResultListsActivity.this);
-        // Specify the type of input expected
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        // set the input type on the builder
-        builder.setView(input);
-
-        // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String playlist = input.getText().toString();
-                // add files to playlist
-                for (MediaFile m : toAdd) {
-                    mDB.addFileToPlaylist(playlist, m);
-                }
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        // show dialog box
-        builder.show();
-    }
-
-    private void removePlaylistDialog(final int position) {
-
-        // build a new dialog box for choosing which playlist to add the item(s) to
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Delete Playlist");
-        builder.setMessage("Are you sure you want to delete the playlist?");
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // cancel dialog
-                dialog.cancel();
-            }
-        });
-        builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                // get current playlist
-                String playlist = mCurrentList.get(position);
-                // get list of songs in that playlist
-                String[] songs = mDB.getSongsFromPlaylist(playlist);
-                // remove songs from playlist
-                for (String s : songs) {
-                    mDB.removeFromPlaylist(playlist, s);
-                }
-                // remove from list view
-                mCurrentList.remove(playlist);
-                // notiy mAdapter of change
-                mAdapter.notifyDataSetChanged();
-
-                // dismiss the listener
-                dialog.dismiss();
-            }
-        });
-        // show dialog
-        builder.show();
-
     }
 
     private void returnIntent(MediaFile[] mediaFiles) {

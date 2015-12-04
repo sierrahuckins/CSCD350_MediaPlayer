@@ -26,10 +26,8 @@ import java.util.Arrays;
 **/
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    EditText searchField;
-
-    //holds the array list of MediaFiles that will be returned to MainActivity
-//    private MediaFile[] mediaFiles;
+    // search field
+    EditText mSearchField;
 
     //holds the current list of strings that is being displayed
     private ArrayList<String> currentListStrings;
@@ -48,8 +46,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         //initialize references to all buttons
         Button searchBtn = (Button)findViewById(R.id.btnSearch);
-        EditText searchTxtFld = (EditText)findViewById(R.id.txtfldSearch);
-        searchField = searchTxtFld;
+        mSearchField = (EditText)findViewById(R.id.txtfldSearch);;
         ListView listResults = (ListView)findViewById(R.id.listResults);
 
         //set on click listeners for buttons and clickable display
@@ -78,7 +75,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //onClick listener for buttons
     @Override
     public void onClick(View v) {
-        String searchValue = String.valueOf(searchField.getText().toString());
+        String searchValue = String.valueOf(mSearchField.getText().toString());
 
         if (searchValue.equals("")) {
             Toast.makeText(this, "Please enter a search request above!", Toast.LENGTH_LONG).show();
