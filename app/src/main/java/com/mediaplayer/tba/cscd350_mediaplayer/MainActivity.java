@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-        if((requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY || requestCode == REQUEST_CODE_SEARCH_ACTIVITY) && resultCode == Activity.RESULT_OK) {
+        if(requestCode == REQUEST_CODE_RESULT_LIST_ACTIVITY && resultCode == Activity.RESULT_OK) {
             // get the array of media files from the intent
             Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
             Object[] ara = (Object[]) bundle.getSerializable(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
@@ -159,6 +159,17 @@ public class MainActivity extends AppCompatActivity {
                     temp.add((MediaFile) o);
                 }
             }
+            // set the now playing list in the music player
+            mMusicPlayerController.setNowPlayingList(temp);
+            mMusicPlayerController.start();
+        }
+        else if(requestCode == REQUEST_CODE_SEARCH_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            // get the media file from the intent
+            Bundle bundle = intent.getBundleExtra(ResultListsActivity.RESULT_LIST_ACTIVITY_RESPONSE_KEY);
+            MediaFile mediaFile = (MediaFile) bundle.getSerializable(SearchActivity.SEARCH_ACTIVITY_RESPONSE_KEY);
+            // make new list of media file
+            ArrayList<MediaFile> temp = new ArrayList<>();
+            temp.add(mediaFile);
             // set the now playing list in the music player
             mMusicPlayerController.setNowPlayingList(temp);
             mMusicPlayerController.start();

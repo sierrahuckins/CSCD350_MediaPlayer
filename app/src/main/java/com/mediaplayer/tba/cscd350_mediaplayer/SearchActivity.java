@@ -60,7 +60,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         //update list if there is saved instance data from before
         if (savedInstanceState != null) {
             ArrayList<String> temp = (ArrayList<String>) savedInstanceState.getSerializable("currentListStrings");
-            // TODO: 11/22/2015 get currentDisplay as well
             if(temp != null) {
                 currentListStrings.addAll(temp);
             }
@@ -104,21 +103,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //onClick listener for clickable display
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //get sublist that contains media files beyond the position clicked
-        MediaFile[] temp = new MediaFile[currentListMediaFiles.size() - position];
-        for(int i = 0; i < temp.length; i ++) {
-            temp[i] = currentListMediaFiles.get(i + position);
-        }
+        //get single item from click
+        MediaFile temp = currentListMediaFiles.get(position);
 
         // return to calling activity
         returnIntent(temp);
     }
 
-    private void returnIntent(MediaFile[] mediaFiles) {
+    private void returnIntent(MediaFile mediaFile) {
         // bundle the MediaFiles and return them to MainActivity as intent
         Intent intent = getIntent();
         Bundle returnedFiles = new Bundle();
-        returnedFiles.putSerializable(SEARCH_ACTIVITY_RESPONSE_KEY, mediaFiles);
+        returnedFiles.putSerializable(SEARCH_ACTIVITY_RESPONSE_KEY, mediaFile);
         intent.putExtra(SEARCH_ACTIVITY_RESPONSE_KEY, returnedFiles);
         // set the result
         setResult(Activity.RESULT_OK, intent);
