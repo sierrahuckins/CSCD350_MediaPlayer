@@ -3,7 +3,6 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -26,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
     ListView mDrawerLayoutListView;
     ActionBarDrawerToggle mActionBarDrawerToggle;
 
-    // music player
-    MusicPlayer mMusicPlayer;
     // music player controller
     MusicPlayerController mMusicPlayerController;
 
@@ -60,10 +56,11 @@ public class MainActivity extends AppCompatActivity {
 
         // add drawer item to drawer item list view
         // create array
-        DrawerItem[] drawerItems = new DrawerItem[2];
+        DrawerItem[] drawerItems = new DrawerItem[3];
         // populate array
         drawerItems[0] = new DrawerItem(R.drawable.music_note_white, "Library");
         drawerItems[1] = new DrawerItem(R.drawable.search_white, "Search");
+        drawerItems[2] = new DrawerItem(R.drawable.sync, "Sync");
 
         // create drawer adapter with the list of drawer items
         mDrawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
@@ -87,11 +84,10 @@ public class MainActivity extends AppCompatActivity {
                         startActivityForResult(intent, REQUEST_CODE_SEARCH_ACTIVITY);
                         break;
                     case 3:
-                        // sync databse
+                        // sync database
                         syncDatabase();
                         break;
                 }
-
                 // close the drawer layout once an item is clicked
                 mDrawerLayout.closeDrawers();
             }
@@ -99,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         // set this as an onClick listener for the drawer items
         mDrawerLayoutListView.setOnItemClickListener(onItemClickListener);
 
-        // this is the animaged toggle button which opens and closes the drawer
+        // this is the animated toggle button which opens and closes the drawer
         // set action bar drawer toggle
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_closed) {
             /** Called when a drawer has settled in a completely closed state. */
@@ -181,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerLayoutListView);
         // if the drawer is open, hide the button settings
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_about).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -200,7 +196,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+
+            // show about dialog
+            MusicPlayerDialog.aboutDialog(MainActivity.this);
+
             return true;
         }
 

@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -19,9 +18,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by Bruce Emehiser on 11/19/2015.
- *
- * Custom view used to control a Music Player
+ * MusicPlayerController.java
+ * Author: Bruce Emehiser
+ * Date: 20151119
+ * Description: Custom view used to control Music player
  */
 public class MusicPlayerController extends LinearLayout implements View.OnClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener, SeekBar.OnSeekBarChangeListener, MusicPlayer.OnMediaChangedListener {
 

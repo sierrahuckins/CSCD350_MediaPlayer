@@ -53,6 +53,14 @@ public class MusicPlayerDialog {
         builder.show();
     }
 
+    public static void selectPlaylistDialog(final Context context, final LibraryDatabase db, final MediaFile toAdd) {
+
+        // make array of single file
+        MediaFile[] mediaFiles = new MediaFile[] {toAdd};
+        // call other overloaded method
+        selectPlaylistDialog(context, db, mediaFiles);
+    }
+
     public static void selectPlaylistDialog(final Context context, final LibraryDatabase db, final MediaFile[] toAdd) {
 
         if(toAdd == null) {
@@ -120,6 +128,22 @@ public class MusicPlayerDialog {
                 dialog.dismiss();
             }
         });
+        // show dialog
+        builder.show();
+    }
+
+    public static void aboutDialog(Context context) {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        // set builder info
+        builder.setTitle("About");
+        builder.setMessage("CSCD 350 Media Player\n" +
+                "Created by:\n" +
+                "Sierra Huckins\n" +
+                "Bruce Emehiser\n" +
+                "Andrew Macey\n" +
+                "Kyle Shermer");
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() { @Override public void onClick(DialogInterface dialog, int which) {}});
         // show dialog
         builder.show();
     }
