@@ -206,19 +206,6 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    /**
-     * Callback method to be invoked when an item in this view has been
-     * clicked and held.
-     * <p/>
-     * Implementers can call getItemAtPosition(position) if they need to access
-     * the data associated with the selected item.
-     *
-     * @param parent   The AbsListView where the click happened
-     * @param view     The view within the AbsListView that was clicked
-     * @param position The position of the view in the list
-     * @param id       The row id of the item that was clicked
-     * @return true if the callback consumed the long click, false otherwise
-     */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 

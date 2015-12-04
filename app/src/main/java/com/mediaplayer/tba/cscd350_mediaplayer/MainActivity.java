@@ -2,6 +2,7 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -13,9 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+/**
+ * MainActivity.java
+ * Author: Bruce Emehiser
+ * Date: 201510
+ * Description: Main Activity for Music Player
+ */
 public class MainActivity extends AppCompatActivity {
 
     // navigation drawer
@@ -39,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // sync the database
+        syncDatabase();
 
         // set up navigation drawer
         initializeDrawer(toolbar);
@@ -127,9 +138,18 @@ public class MainActivity extends AppCompatActivity {
         if(mFileSearch == null) {
             // create new file search
             mFileSearch = new FileSearch(getBaseContext());
+            // run file search
+            mFileSearch.execute(null, null, null);
         }
-        // run file search
-        mFileSearch.doInBackground(null, null, null);
+        else if(mFileSearch.getStatus() == AsyncTask.Status.FINISHED) {
+            // create new file search
+            mFileSearch = new FileSearch(getBaseContext());
+            // run file search
+            mFileSearch.execute(null, null, null);
+        }
+        else {
+            Toast.makeText(MainActivity.this, "Sync in Process", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
