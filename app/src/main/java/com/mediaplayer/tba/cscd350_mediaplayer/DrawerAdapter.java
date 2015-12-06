@@ -11,22 +11,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by Bruce on 10/12/2015.
- *
- * Adapter for the Drawer in MainActivity
+ * DrawerAdapter.java
+ * Author: Bruce Emehiser
+ * Date: 20151012
+ * Description: Adapter for the Navigation Drawer in MainActivity.java
  */
 public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
 
-    Context context;
-    int resourceId;
-    DrawerItem[] drawerItems;
+    Context mContext;
+    int mResourceId;
+    DrawerItem[] mDrawerItems;
 
     public DrawerAdapter(Context context, int resourceId, DrawerItem[] drawerItems) {
         super(context, resourceId, drawerItems);
 
-        this.context = context;
-        this.resourceId = resourceId;
-        this.drawerItems = drawerItems;
+        mContext = context;
+        mResourceId = resourceId;
+        mDrawerItems = drawerItems;
     }
 
     @Override
@@ -35,18 +36,18 @@ public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
         if(convertView == null) {
 
             // inflate the view
-            Activity activity = (Activity) context;
+            Activity activity = (Activity) mContext;
             LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.drawer_item, null);
         }
 
         // set text view
         TextView textView = (TextView) convertView.findViewById(R.id.drawer_item_text_view);
-        textView.setText(drawerItems[position].getText());
+        textView.setText(mDrawerItems[position].getText());
 
         // set image resource
         ImageView imageView = (ImageView) convertView.findViewById(R.id.drawer_item_image_view);
-        imageView.setImageResource(drawerItems[position].getIconId());
+        imageView.setImageResource(mDrawerItems[position].getIconId());
 
         return convertView;
     }

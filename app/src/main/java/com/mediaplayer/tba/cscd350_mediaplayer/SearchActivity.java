@@ -16,16 +16,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
-*SearchActivity.java
-*Author: Sierra Huckins
-*Revision: 1
-*Date: 20151130
-*Rev. Author: Sierra Huckins
-*Description: Activity that allows user to search database for given string within title, album, artist, and genre fields.
-*Results are returned as a list on screen. User can then choose result from that list to be returned to main screen for playing.
-**/
+ * SearchActivity.java
+ * Author: Sierra Huckins
+ * Revision: 1
+ * Date: 20151130
+ * Rev. Author: Sierra Huckins
+ * Description: Activity that allows user to search database for given string within title, album, artist, and genre fields.
+ * Results are returned as a list on screen. User can then choose result from that list to be returned to main screen for playing.
+ */
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
+    public static final String CURRENT_LIST_STRINGS_TAG = "mCurrentListStrings";
+    public static final String CURRENT_LIST_MEDIA_FILES_TAG = "mCurrentListMediaFiles";
     //gui references
     private Button mSearchButton;
     private EditText mSearchField;
@@ -66,10 +68,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         mListResults.setAdapter(mAdapter);
     }
 
+    @SuppressWarnings("unchecked")
     private void updateSavedInstanceState(Bundle savedInstanceState) {
         //update saved strings list data and mediaFiles list data
-        mCurrentListStrings.addAll((ArrayList<String>) savedInstanceState.getSerializable("mCurrentListStrings"));
-        mCurrentListMediaFiles.addAll((ArrayList<MediaFile>) savedInstanceState.getSerializable("mCurrentListMediaFiles"));
+        Object currentListStringsObject = savedInstanceState.getSerializable(CURRENT_LIST_STRINGS_TAG);
+        Object currentListMediaFilesObject = savedInstanceState.getSerializable(CURRENT_LIST_MEDIA_FILES_TAG);
+        if(currentListStringsObject instanceof ArrayList && currentListMediaFilesObject instanceof ArrayList) {
+            mCurrentListStrings.addAll((ArrayList<String>) currentListStringsObject);
+            mCurrentListMediaFiles.addAll((ArrayList<MediaFile>) currentListMediaFilesObject);
+        }
     }
 
     private void initializeOnClickListeners() {
@@ -149,10 +156,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         super.onSaveInstanceState(outState);
 
         //save what is currently being displayed so it can be reinitialized after state change
-        outState.putSerializable("mCurrentListStrings", mCurrentListStrings);
+        outState.putSerializable(CURRENT_LIST_STRINGS_TAG, mCurrentListStrings);
 
         //save current media files that go with display for later reinitialization
-        outState.putSerializable("currentMediaFiles", mCurrentListMediaFiles);
+        outState.putSerializable(CURRENT_LIST_MEDIA_FILES_TAG, mCurrentListMediaFiles);
     }
 
     @Override

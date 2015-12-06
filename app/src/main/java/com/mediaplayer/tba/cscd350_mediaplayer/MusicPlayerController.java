@@ -21,14 +21,14 @@ import java.util.ArrayList;
  * MusicPlayerController.java
  * Author: Bruce Emehiser
  * Date: 20151119
- * Description: Custom view used to control Music player
+ * Description: Custom View used to control Music Player
  */
 public class MusicPlayerController extends LinearLayout implements View.OnClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener, SeekBar.OnSeekBarChangeListener, MusicPlayer.OnMediaChangedListener {
 
     // logcat tag
     public static final String TAG = "MusicPlayerController";
 
-    // activity context
+    // activity mContext
     private Context mContext;
 
     // music player to control

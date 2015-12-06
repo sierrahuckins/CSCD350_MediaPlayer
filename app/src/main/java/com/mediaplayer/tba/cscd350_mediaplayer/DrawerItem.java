@@ -1,34 +1,39 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 /**
- * Created by Bruce on 10/12/2015.
- *
- * Drawer items for navigation drawer resources
+ * DrawerItem.java
+ * Author: Bruce Emehiser
+ * Date: 20151012
+ * Description: Drawer items for navigation drawer resources (wrapper class)
  */
 public class DrawerItem {
 
-    private int iconId;
-    private String text;
+    private int mIconId;
+    private String mText;
 
     public DrawerItem(int iconId, String text) {
 
-        this.iconId = iconId;
-        this.text = text;
+        mIconId = iconId;
+        mText = text;
     }
 
     public int getIconId() {
-        return iconId;
+        return mIconId;
     }
 
     public String getText() {
-        return text;
+        return mText;
     }
 
     public void setIconId(int iconId) {
-        this.iconId = iconId;
+        mIconId = iconId;
     }
 
     public void setText(String text) {
-        this.text = text;
+        mText = text;
+    }
+
+    public String toString() {
+        return mText + " " + mIconId;
     }
 }

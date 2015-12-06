@@ -1,33 +1,35 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-import java.io.FileNotFoundException;
 import java.io.Serializable;
 
 /**
- * Created by Bruce Emehiser on 11/2/2015.
- * Edited Getters on 11/7/2015 to account for null strings - Andrew Macy
- * Wrapper for data which describes a media file.
+ * MediaFile.java
+ * Author: Bruce Emehiser
+ * Date: 20151102
+ * Description: Wrapper for data which describes a media file
+ * Revision 1
+ * Rev. Author: Andrew Macey
+ * Date: 20151107
+ * Description: Edited getters to account for null strings
  */
 public class MediaFile implements Serializable {
 
-    private String artist;
-    private String album;
-    private String title;
-    private String genre;
-    private String uriString;
-    transient private Uri uri;
+    private String mArtist;
+    private String mAlbum;
+    private String mTitle;
+    private String mGenre;
+    private String mUriString;
+    transient private Uri mUri;
 
     public MediaFile(){
-        this.artist = null;
-        this.album = null;
-        this.title = null;
-        this.genre = null;
-        this.uriString = null;
-        this.uri = null;
+        mArtist = null;
+        mAlbum = null;
+        mTitle = null;
+        mGenre = null;
+        mUriString = null;
+        mUri = null;
     }
 
     public MediaFile(String artist, String album, String title, String genre, Uri uri) {
@@ -35,73 +37,73 @@ public class MediaFile implements Serializable {
         if(artist == null || album == null || title == null || genre == null || uri == null) {
             throw new NullPointerException("Incoming parameters cannot be null");
         }
-        this.artist = artist;
-        this.album = album;
-        this.title = title;
-        this.genre = genre;
-        this.uriString = uri.toString();
-        this.uri = uri;
+        mArtist = artist;
+        mAlbum = album;
+        mTitle = title;
+        mGenre = genre;
+        mUriString = uri.toString();
+        mUri = uri;
     }
 
     public String getArtist() {
-        if(artist != null)
-            return artist;
+        if(mArtist != null)
+            return mArtist;
         return "";
     }
 
     public String getAlbum() {
-        if(album != null)
-            return album;
+        if(mAlbum != null)
+            return mAlbum;
         return "";
     }
 
     public String getTitle() {
-        if(title != null)
-            return title;
+        if(mTitle != null)
+            return mTitle;
         return "";
     }
 
     public String getGenre() {
-        if( genre != null )
-            return genre;
+        if( mGenre != null )
+            return mGenre;
         return "";
     }
 
     public Uri getUri() {
-        if(uri != null) {
-            return uri;
+        if(mUri != null) {
+            return mUri;
         }
-        uri = Uri.parse(uriString);
-        if(uri != null) {
-            return uri;
+        mUri = Uri.parse(mUriString);
+        if(mUri != null) {
+            return mUri;
         }
         // this should maybe be a file not found, or an IO exception
         throw new NullPointerException("Media File Uri does not exist");
     }
 
     public void setArtist(String artist) {
-        this.artist = artist;
+        mArtist = artist;
     }
 
     public void setAlbum(String album) {
-        this.album = album;
+        mAlbum = album;
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        mTitle = title;
     }
 
     public void setGenre(String genre) {
-        this.genre = genre;
+        mGenre = genre;
     }
 
     public void setUri(Uri uri) {
-        this.uri = uri;
+        this.mUri = uri;
     }
 
     @Override
     public String toString() {
-//        return artist + " " + album + " " + title + " " + genre + " " + uri;
-        return title;
+//        return mArtist + " " + mAlbum + " " + mTitle + " " + mGenre + " " + mUri;
+        return mTitle;
     }
 }

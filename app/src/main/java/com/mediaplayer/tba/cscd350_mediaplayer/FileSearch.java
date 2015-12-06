@@ -26,6 +26,7 @@ public class FileSearch extends AsyncTask<Void, Void, Void> {
 
     Context mContext;
 
+    // column ids
     private static String[] mediaProjection = {
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.ARTIST,

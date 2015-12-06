@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by Bruce Emehiser on 11/19/2015.
- *
- * Wrapper around MediaPlayer
+ * MusicPlayer.java
+ * Author: Bruce Emehiser
+ * Date: 20151119
+ * Description: Wrapper around android.media.MediaPlayer
  */
 public class MusicPlayer {
 
@@ -31,7 +32,7 @@ public class MusicPlayer {
     }
 
     // array of listeners
-    private ArrayList<OnMediaChangedListener> listeners;
+    private ArrayList<OnMediaChangedListener> mListeners;
 
     // context of application
     private Context mContext;
@@ -41,7 +42,7 @@ public class MusicPlayer {
 
     public MusicPlayer(Context context) {
         mContext = context;
-        listeners = new ArrayList<>();
+        mListeners = new ArrayList<>();
     }
 
     public void setLooping(boolean loop) {
@@ -138,7 +139,7 @@ public class MusicPlayer {
 
     public void setOnMediaChangedListener(OnMediaChangedListener listener) {
         if(listener != null) {
-            listeners.add(listener);
+            mListeners.add(listener);
         }
     }
 
@@ -148,17 +149,17 @@ public class MusicPlayer {
         switch (notification) {
 
             case SONG_STARTED:
-                for (OnMediaChangedListener listener : listeners) {
+                for (OnMediaChangedListener listener : mListeners) {
                     listener.songStarted(this);
                 }
                 break;
             case SONG_STOPPED:
-                for (OnMediaChangedListener listener : listeners) {
+                for (OnMediaChangedListener listener : mListeners) {
                     listener.songStopped(this);
                 }
                 break;
             case SONG_ENDED:
-                for(OnMediaChangedListener listener : listeners) {
+                for(OnMediaChangedListener listener : mListeners) {
                     listener.songEnded(this);
                 }
         }
