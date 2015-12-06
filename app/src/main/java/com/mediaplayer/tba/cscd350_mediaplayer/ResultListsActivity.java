@@ -242,6 +242,10 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void returnIntent(MediaFile[] mediaFiles) {
+        // guard against android.os.TransactionTooLargeException by only returning subset
+        if(mediaFiles.length > 999) {
+            mediaFiles = Arrays.copyOfRange(mediaFiles, 0, 999);
+        }
         // bundle the MediaFiles and return them to MainActivity as intent
         Intent intent = getIntent();
         Bundle returnedFiles = new Bundle();
