@@ -1,9 +1,10 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 /**
- * Created by Andrew Macy on 11/7/2015.
- * Interface for interacting with database
- * Changed interface name.
+ * ISQLite.java
+ * Author: Andrew Macy
+ * Date: 20151107
+ * Description: Interface for interacting with database
  */
 
 public interface ISQLite {
@@ -42,12 +43,6 @@ public interface ISQLite {
     String[] getAlbums(String artist) ;
     SongData[] getSongs(String album);
 
-
-    /*
-     * search the database
-     *
-     * return an array of MediaFiles based on the search
-     * This will search all of the fields, Artist, Album, Title, and Genre
-     */
+    // search the database for (artist + album + title + genre) containing @search
     MediaFile[] search(String search);
 }

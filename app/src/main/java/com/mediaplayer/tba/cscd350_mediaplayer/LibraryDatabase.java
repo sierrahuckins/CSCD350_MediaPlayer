@@ -11,8 +11,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 /**
- * Created by Andrew Macy on 11/1/2015.
- * Class that creates and accesses our Media Database
+ * LibraryDatabase.java
+ * Author: Andrew Macy
+ * Date: 20151101
+ * Description: Class that creates and accesses Media Database
  */
 public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     private static final String DATABASE_NAME = "MediaPlayerLibrary.db";
