@@ -14,7 +14,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
 /**
  * ResultsListsActivity.java
  * Author: Sierra Huckins
@@ -30,22 +29,22 @@ import java.util.Arrays;
  **/
 public class ResultListsActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     //gui references
-    private Button artistsBtn;
-    private Button albumsBtn;
-    private Button playlistsBtn;
-    private Button genreBtn;
-    private Button songsBtn;
-    private ListView listResults;
+    private Button mArtistsButton;
+    private Button mAlbumsButton;
+    private Button mPlaylistsButton;
+    private Button mGenresButton;
+    private Button mTitlesButton;
+    private ListView mResultsList;
 
-    //intent request response keys
+    // intent request response keys
     public static final String CURRENT_LIST_KEY = "mCurrentList";
     public static final String CURRENT_DISPLAY_KEY = "mCurrentDisplayState";
 
-    //holds the current list of strings that is being displayed
+    // holds the current list of strings that is being displayed
     private ArrayList<String> mCurrentList = new ArrayList<>();
     private ArrayList<MediaFile> mCurrentListMediaFiles = new ArrayList<>();
 
-    //enum class representing current Display states
+    // enum class representing current Display states
     private enum Display {ARTISTS, ALBUMS, PLAYLISTS, SONGS, GENRES}
     private Display mCurrentDisplayState;
 
@@ -59,24 +58,25 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results_list);
 
-        //initialize references to all buttons
+        // initialize references to all buttons
         initializeGUIReferences();
 
-        //set on click listeners for buttons and clickable Display
+        // set on click listeners for buttons and clickable Display
         initializeOnClickListeners();
 
-        //update list if there is saved instance data from before
+        // update list if there is saved instance data from before
         updateSavedInstanceState(savedInstanceState);
 
         // get new mAdapter and pass it a list item layout and the text view in the list item
         mAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.list_entry, mCurrentList);
         // set the mAdapter on the list in content_resultslistactivity
-        listResults.setAdapter(mAdapter);
+        mResultsList.setAdapter(mAdapter);
 
         // register as a long click listener. we will show a dialog box
-        listResults.setOnItemLongClickListener(this);
+        mResultsList.setOnItemLongClickListener(this);
     }
 
+    @SuppressWarnings("unchecked")
     private void updateSavedInstanceState(Bundle savedInstanceState) {
         //sets saved instance state data if there was a previously saved instance state
         if (savedInstanceState != null) {
@@ -95,48 +95,48 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void initializeOnClickListeners() {
-        artistsBtn.setOnClickListener(this);
-        albumsBtn.setOnClickListener(this);
-        playlistsBtn.setOnClickListener(this);
-        genreBtn.setOnClickListener(this);
-        songsBtn.setOnClickListener(this);
-        listResults.setOnItemClickListener(this);
+        mArtistsButton.setOnClickListener(this);
+        mAlbumsButton.setOnClickListener(this);
+        mPlaylistsButton.setOnClickListener(this);
+        mGenresButton.setOnClickListener(this);
+        mTitlesButton.setOnClickListener(this);
+        mResultsList.setOnItemClickListener(this);
     }
 
     private void initializeGUIReferences() {
-        artistsBtn = (Button) findViewById(R.id.btnArtists);
-        albumsBtn = (Button) findViewById(R.id.btnAlbums);
-        playlistsBtn = (Button) findViewById(R.id.btnPlaylists);
-        genreBtn = (Button) findViewById(R.id.btnGenre);
-        songsBtn = (Button) findViewById(R.id.btnSongs);
-        listResults = (ListView) findViewById(R.id.listResults);
+        mArtistsButton = (Button) findViewById(R.id.artists_button);
+        mAlbumsButton = (Button) findViewById(R.id.albums_button);
+        mPlaylistsButton = (Button) findViewById(R.id.playlists_button);
+        mGenresButton = (Button) findViewById(R.id.genres_button);
+        mTitlesButton = (Button) findViewById(R.id.titles_button);
+        mResultsList = (ListView) findViewById(R.id.results_list);
     }
 
     @Override
     public void onClick(View v) {
         String[] temp = new String[0];
         switch(v.getId()) {
-            case R.id.btnArtists:
+            case R.id.artists_button:
                 //retrieve artists from database
                 temp = mDB.getArtists();
                 mCurrentDisplayState = Display.ARTISTS;
                 break;
-            case R.id.btnAlbums:
+            case R.id.albums_button:
                 //retrieve albums from database
                 temp = mDB.getAlbums();
                 mCurrentDisplayState = Display.ALBUMS;
                 break;
-            case R.id.btnPlaylists:
+            case R.id.playlists_button:
                 //retrieve playlists from database
                 temp = mDB.getPlaylists();
                 mCurrentDisplayState = Display.PLAYLISTS;
                 break;
-            case R.id.btnGenre:
+            case R.id.genres_button:
                 //retrieve genres from database
                 temp = mDB.getGenres();
                 mCurrentDisplayState = Display.GENRES;
                 break;
-            case R.id.btnSongs:
+            case R.id.titles_button:
                 //retrieve songs from database
                 temp = mDB.getSongTitles();
                 // update current list of media files

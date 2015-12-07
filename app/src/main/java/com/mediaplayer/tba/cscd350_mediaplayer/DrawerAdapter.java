@@ -18,15 +18,13 @@ import android.widget.TextView;
  */
 public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
 
-    Context mContext;
-    int mResourceId;
-    DrawerItem[] mDrawerItems;
+    private Context mContext;
+    private DrawerItem[] mDrawerItems;
 
     public DrawerAdapter(Context context, int resourceId, DrawerItem[] drawerItems) {
         super(context, resourceId, drawerItems);
 
         mContext = context;
-        mResourceId = resourceId;
         mDrawerItems = drawerItems;
     }
 

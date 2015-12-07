@@ -17,7 +17,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Artists"
-            android:id="@+id/btnArtists"
+            android:id="@+id/artists_button"
             android:textSize="10dp"
             android:layout_weight="1"
             android:singleLine="true" />
@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Albums"
-            android:id="@+id/btnAlbums"
+            android:id="@+id/albums_button"
             android:textSize="10dp"
             android:layout_weight="1"
             android:singleLine="true" />
@@ -37,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Playlists"
-            android:id="@+id/btnPlaylists"
+            android:id="@+id/playlists_button"
             android:textSize="10dp"
             android:layout_weight="1"
             android:singleLine="true" />
@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Genre"
-            android:id="@+id/btnGenre"
+            android:id="@+id/genres_button"
             android:textSize="10dp"
             android:layout_weight="1"
             android:singleLine="true" />
@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Songs"
-            android:id="@+id/btnSongs"
+            android:id="@+id/titles_button"
             android:textSize="10dp"
             android:layout_weight="1"
             android:singleLine="true" />
@@ -67,7 +67,7 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listResults"
+        android:id="@+id/results_list"
         android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>
