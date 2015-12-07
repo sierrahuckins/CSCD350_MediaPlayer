@@ -16,9 +16,9 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Artists"
+            android:text="@string/results_list_artists"
             android:id="@+id/artists_button"
-            android:textSize="10dp"
+            android:textSize="@dimen/menu_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -26,9 +26,9 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Albums"
+            android:text="@string/results_list_albums"
             android:id="@+id/albums_button"
-            android:textSize="10dp"
+            android:textSize="@dimen/menu_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -36,9 +36,9 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Playlists"
+            android:text="@string/results_list_playlists"
             android:id="@+id/playlists_button"
-            android:textSize="10dp"
+            android:textSize="@dimen/menu_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -46,9 +46,9 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Genre"
+            android:text="@string/results_list_genres"
             android:id="@+id/genres_button"
-            android:textSize="10dp"
+            android:textSize="@dimen/menu_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -56,9 +56,9 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Songs"
+            android:text="@string/results_list_songs"
             android:id="@+id/titles_button"
-            android:textSize="10dp"
+            android:textSize="@dimen/menu_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 

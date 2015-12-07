@@ -190,13 +190,13 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     // get list of songs
     @Override
-    public SongData[] getSongs(){
+    public MediaFile[] getSongs(){
         String[] select = {TITLE, theURI};
         String where = "";
 
         Cursor results = queryLibrary(select, where);
 
-        return constructSongResults(results);
+        return constructMediaFileResults(results);
     }
 
     @Override
@@ -232,13 +232,13 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
 
     // get list of songs in an album
     @Override
-    public SongData[] getSongs(String album){
+    public MediaFile[] getSongs(String album){
         String[] select = {TITLE, theURI};
         String where = ALBUM + " = \"" + album + "\"";
 
         Cursor results = queryLibrary(select, where);
 
-        return constructSongResults(results);
+        return constructMediaFileResults(results);
     }
 
     @Override
@@ -375,21 +375,6 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
                     results.getString(3), tmpURI);
             i ++;
         }
-        return data;
-    }
-
-    private SongData[] constructSongResults(Cursor results){
-        SongData[] data = new SongData[results.getCount()];
-
-        if(results.getCount() == 0)
-            return data;
-
-        int i = 0;
-        while(results.moveToNext()){
-            data[i] = new SongData(results.getString(0), results.getString(1));
-            i ++;
-        }
-
         return data;
     }
 }

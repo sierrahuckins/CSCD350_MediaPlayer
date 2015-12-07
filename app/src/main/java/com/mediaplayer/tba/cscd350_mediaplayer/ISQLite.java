@@ -37,11 +37,11 @@ public interface ISQLite {
     String[] getGenres();
 
     // get list of songs
-    SongData[] getSongs();
+    MediaFile[] getSongs();
     String[] getSongTitles();
     String[] getSongsFromPlaylist(String playlist);
     String[] getAlbums(String artist) ;
-    SongData[] getSongs(String album);
+    MediaFile[] getSongs(String album);
 
     // search the database for (artist + album + title + genre) containing @search
     MediaFile[] search(String search);

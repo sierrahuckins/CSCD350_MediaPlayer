@@ -172,16 +172,17 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
         }
         else if (mCurrentDisplayState == Display.ALBUMS) {
             // media to Display
-            ArrayList<SongData> songs = new ArrayList<>();
-            songs.addAll(Arrays.asList(mDB.getSongs(clicked)));
+            ArrayList<MediaFile> mediaFiles = new ArrayList<>();
+
+            mediaFiles.addAll(Arrays.asList(mDB.getSongs(clicked)));
 
             // get all the songs in that album
             mCurrentListMediaFiles.addAll(Arrays.asList(mDB.getMediaFilesFromAlbum(clicked)));
 
             // add to current list
             mCurrentList.clear();
-            for(SongData song : songs) {
-                mCurrentList.add(song.getTitle());
+            for(MediaFile mediaFile : mediaFiles) {
+                mCurrentList.add(mediaFile.getTitle());
             }
 
             // update current view

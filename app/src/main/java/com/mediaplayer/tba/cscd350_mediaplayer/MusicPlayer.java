@@ -105,7 +105,10 @@ public class MusicPlayer {
 
     public void stop() {
         if(mMediaPlayer != null) {
-            mMediaPlayer.stop();
+            if(mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
             notifyListeners(Notification.SONG_STOPPED);

@@ -1,11 +1,12 @@
 <resources>
+    <!--app-->
     <string name="app_name">CSCD350_MediaPlayer</string>
+
     <!--activity titles-->
     <string name="result_list_name">Library</string>
     <string name="search_name">Search</string>
 
-    <!--settings menu-->
-    <string name="action_settings">Settings</string>
+    <!--menu-->
     <string name="action_about">About</string>
 
     <!--navigation drawer-->
@@ -21,4 +22,17 @@
     <string name="music_player_controller_play_pause_song">Play/Pause Current Song</string>
     <string name="music_player_controller_play_next_song">Play Next Song</string>
     <string name="music_player_controller_repeat_current_song">Repeat Current Song</string>
+
+    <!--results list-->
+    <string name="results_list_artists">Artists</string>
+    <string name="results_list_albums">Albums</string>
+    <string name="results_list_playlists">Playlists</string>
+    <string name="results_list_genres">Genre</string>
+    <string name="results_list_songs">Songs</string>
+
+    <!--search-->
+    <string name="search_search">Search</string>
+
+    <!--drawer item-->
+    <string name="drawer_item_icon">Icon</string>
 </resources>

@@ -18,14 +18,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/search_text_field"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:inputType="text"
+            android:labelFor="@+id/search_text_field" />
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search_search"
             android:id="@+id/search_button"
-            android:textSize="10dp"
+            android:textSize="@dimen/menu_text_size"
             android:layout_weight=".3" />
 
     </LinearLayout>
