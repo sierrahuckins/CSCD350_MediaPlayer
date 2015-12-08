@@ -233,7 +233,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
     // get list of songs in an album
     @Override
     public MediaFile[] getSongs(String album){
-        String[] select = {TITLE, theURI};
+        String[] select = {"* "};
         String where = ALBUM + " = \"" + album + "\"";
 
         Cursor results = queryLibrary(select, where);

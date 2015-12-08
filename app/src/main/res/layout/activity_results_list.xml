@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:text="@string/results_list_artists"
             android:id="@+id/artists_button"
-            android:textSize="@dimen/menu_text_size"
+            android:textSize="@dimen/button_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="@string/results_list_albums"
             android:id="@+id/albums_button"
-            android:textSize="@dimen/menu_text_size"
+            android:textSize="@dimen/button_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:text="@string/results_list_playlists"
             android:id="@+id/playlists_button"
-            android:textSize="@dimen/menu_text_size"
+            android:textSize="@dimen/button_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:text="@string/results_list_genres"
             android:id="@+id/genres_button"
-            android:textSize="@dimen/menu_text_size"
+            android:textSize="@dimen/button_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:text="@string/results_list_songs"
             android:id="@+id/titles_button"
-            android:textSize="@dimen/menu_text_size"
+            android:textSize="@dimen/button_text_size"
             android:layout_weight="1"
             android:singleLine="true" />
 

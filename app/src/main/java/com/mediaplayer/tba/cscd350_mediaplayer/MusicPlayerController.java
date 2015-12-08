@@ -1,8 +1,10 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +29,10 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
 
     // logcat tag
     public static final String TAG = "MusicPlayerController";
+    public static final String NOW_PLAYING_POSITION_KEY = "now_playing_position";
+    public static final String NOW_PLAYING_KEY = "now_playing";
+    public static final String SAVED_INSTANCE_KEY = "saved_instance";
+    public static final String SEEK_POSITION_KEY = "seek_position";
 
     // activity mContext
     private Context mContext;
@@ -155,6 +161,9 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
     }
 
     private void begin() {
+        if(mMusicPlayer == null) {
+            mMusicPlayer = new MusicPlayer(mContext);
+        }
         // if list not null or empty, and now playing position is within the bounds of the now playing list
         if(mNowPlayingList != null && !mNowPlayingList.isEmpty() && mNowPlayingList.size() > mNowPlayingPosition) {
             // clear the music player
@@ -384,5 +393,45 @@ public class MusicPlayerController extends LinearLayout implements View.OnClickL
             // play that item
             begin();
         }
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+
+        Parcelable savedInstanceState = super.onSaveInstanceState();
+
+        Bundle bundle = new Bundle();
+
+        // super save
+        bundle.putParcelable(SAVED_INSTANCE_KEY, savedInstanceState);
+
+        // save now playing list
+        bundle.putSerializable(NOW_PLAYING_KEY, mNowPlayingList);
+        // save now playing position
+        bundle.putInt(NOW_PLAYING_POSITION_KEY, mNowPlayingPosition);
+        // save song position
+        bundle.putInt(SEEK_POSITION_KEY, mMusicPlayer.getCurrentPosition());
+
+        return bundle;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onRestoreInstanceState(Parcelable savedInstanceState) {
+
+        Bundle bundle = (Bundle) savedInstanceState;
+
+        // restore now playing list
+        Object temp = bundle.getSerializable(NOW_PLAYING_KEY);
+        if(temp != null) {
+            mNowPlayingList.addAll((ArrayList<MediaFile>) temp);
+            // restore now playing list position
+            mNowPlayingPosition = bundle.getInt(NOW_PLAYING_POSITION_KEY);
+            // update now playing view
+            mNowPlayingAdapter.notifyDataSetChanged();
+        }
+
+        // super restore
+        super.onRestoreInstanceState(bundle.getParcelable(SAVED_INSTANCE_KEY));
     }
 }

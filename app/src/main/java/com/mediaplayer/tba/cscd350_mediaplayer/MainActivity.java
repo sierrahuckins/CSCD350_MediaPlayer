@@ -1,6 +1,8 @@
 package com.mediaplayer.tba.cscd350_mediaplayer;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_RESULT_LIST_ACTIVITY = 1;
     public static final int REQUEST_CODE_SEARCH_ACTIVITY = 2;
 
+    Notification mNotification;
+    NotificationManager mNotificationManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         // create music player controller
         mMusicPlayerController = (MusicPlayerController) findViewById(R.id.music_controller);
 
+        // show media player notification
+        showNotification();
     }
 
     private void initializeDrawer(final Toolbar toolbar) {
@@ -152,6 +159,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showNotification() {
+
+
+//        // for launch app on click
+//        Intent intent = new Intent(mContext, MainActivity.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 1, intent, 0);
+
+        if(mNotificationManager == null) {
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        }
+
+        Notification.Builder builder = new Notification.Builder(getApplicationContext());
+
+        builder.setAutoCancel(false);
+        builder.setContentTitle("Music Player");
+        builder.setSmallIcon(R.drawable.app_icon);
+//        builder.setContentIntent(pendingIntent);
+
+        mNotification = builder.build();
+        mNotificationManager.notify(11, mNotification);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -168,8 +197,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             // set the now playing list in the music player
-            mMusicPlayerController.setNowPlayingList(temp);
-            mMusicPlayerController.start();
+            if(temp.size() > 0) {
+                mMusicPlayerController.setNowPlayingList(temp);
+                mMusicPlayerController.start();
+            }
         }
         else if(requestCode == REQUEST_CODE_SEARCH_ACTIVITY && resultCode == Activity.RESULT_OK) {
             // get the media file from the intent
@@ -217,6 +248,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // stop music playback
+        mMusicPlayerController.stop();
+
+        super.onBackPressed();
     }
 }
 // life is good

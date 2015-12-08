@@ -25,7 +25,7 @@ public class MusicPlayer {
     }
 
     // notification types
-    private enum Notification {
+    private enum Notify {
         SONG_STARTED,
         SONG_STOPPED,
         SONG_ENDED
@@ -61,7 +61,7 @@ public class MusicPlayer {
             mMediaPlayer.start();
 
             // notify listeners
-            notifyListeners(Notification.SONG_STARTED);
+            notifyListeners(Notify.SONG_STARTED);
         }
     }
 
@@ -84,7 +84,7 @@ public class MusicPlayer {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                notifyListeners(Notification.SONG_ENDED);
+                notifyListeners(Notify.SONG_ENDED);
             }
         });
     }
@@ -99,7 +99,7 @@ public class MusicPlayer {
             mMediaPlayer.pause();
 
             // notify listeners
-            notifyListeners(Notification.SONG_STOPPED);
+            notifyListeners(Notify.SONG_STOPPED);
         }
     }
 
@@ -111,7 +111,7 @@ public class MusicPlayer {
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
-            notifyListeners(Notification.SONG_STOPPED);
+            notifyListeners(Notify.SONG_STOPPED);
         }
     }
 
@@ -146,7 +146,7 @@ public class MusicPlayer {
         }
     }
 
-    private void notifyListeners(Notification notification) {
+    private void notifyListeners(Notify notification) {
 
         // update listeners
         switch (notification) {
