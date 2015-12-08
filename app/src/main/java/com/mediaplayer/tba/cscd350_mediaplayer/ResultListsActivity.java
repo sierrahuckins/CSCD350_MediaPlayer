@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -241,7 +240,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
                 MusicPlayerDialog.selectPlaylistDialog(ResultListsActivity.this, mDB, temp);
                 break;
             case GENRES:
-                Toast.makeText(ResultListsActivity.this, "Genres not yet implemented", Toast.LENGTH_SHORT).show();
+                MusicPlayerDialog.selectPlaylistDialog(ResultListsActivity.this, mDB, mDB.getMediaFilesFromGenre(mCurrentList.get(position)));
                 break;
             case PLAYLISTS:
 
