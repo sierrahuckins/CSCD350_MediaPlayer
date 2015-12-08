@@ -1,6 +1,6 @@
 <resources>
     <!--app-->
-    <string name="app_name">CSCD350_MediaPlayer</string>
+    <string name="app_name">Media Player</string>
 
     <!--activity titles-->
     <string name="result_list_name">Library</string>
@@ -10,11 +10,7 @@
     <string name="action_about">About</string>
 
     <!--navigation drawer-->
-    <string name="drawer_closed">Media Player</string>
     <string name="drawer_open">Select An Option</string>
-
-    <!--text size-->
-    <string name="menu_item_text_size">14sp</string>
 
     <!--music player controller-->
     <string name="music_player_controller_now_playing">Now Playing</string>
@@ -35,4 +31,8 @@
 
     <!--drawer item-->
     <string name="drawer_item_icon">Icon</string>
+    <string name="main_activity_sync_in_progress">Sync in Process</string>
+    <string name="main_activity_library">Library</string>
+    <string name="main_activity_search">Search</string>
+    <string name="main_activity_sync">Sync</string>
 </resources>

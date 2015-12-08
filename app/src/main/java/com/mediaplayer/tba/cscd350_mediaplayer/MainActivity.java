@@ -69,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
         // create array
         DrawerItem[] drawerItems = new DrawerItem[3];
         // populate array
-        drawerItems[0] = new DrawerItem(R.drawable.music_note_white, "Library");
-        drawerItems[1] = new DrawerItem(R.drawable.search_white, "Search");
-        drawerItems[2] = new DrawerItem(R.drawable.sync, "Sync");
+        drawerItems[0] = new DrawerItem(R.drawable.music_note_white, getString(R.string.main_activity_library));
+        drawerItems[1] = new DrawerItem(R.drawable.search_white, getString(R.string.main_activity_search));
+        drawerItems[2] = new DrawerItem(R.drawable.sync, getString(R.string.main_activity_sync));
 
         // create drawer adapter with the list of drawer items
         mDrawerAdapter = new DrawerAdapter(this, R.layout.drawer_item, drawerItems);
@@ -108,11 +108,11 @@ public class MainActivity extends AppCompatActivity {
 
         // this is the animated toggle button which opens and closes the drawer
         // set action bar drawer toggle
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_closed) {
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.app_name) {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                setTitle(getString(R.string.drawer_closed));
+                setTitle(getString(R.string.app_name));
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
             /** Called when a drawer has settled in a completely open state. */
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             mFileSearch.execute(null, null, null);
         }
         else {
-            Toast.makeText(MainActivity.this, "Sync in Process", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, R.string.main_activity_sync_in_progress, Toast.LENGTH_SHORT).show();
         }
     }
 
