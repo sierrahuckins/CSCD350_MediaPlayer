@@ -103,7 +103,6 @@ public class MediaFile implements Serializable {
 
     @Override
     public String toString() {
-//        return mArtist + " " + mAlbum + " " + mTitle + " " + mGenre + " " + mUri;
         return mTitle;
     }
 }
