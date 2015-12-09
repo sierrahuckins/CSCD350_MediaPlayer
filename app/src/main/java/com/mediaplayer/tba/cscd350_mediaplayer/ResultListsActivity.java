@@ -48,7 +48,7 @@ public class ResultListsActivity extends AppCompatActivity implements View.OnCli
     private Display mCurrentDisplayState;
 
     private ArrayAdapter<String> mAdapter;
-    private LibraryDatabase mDB = new LibraryDatabase(this);
+    private ISQLite mDB = new LibraryDatabase(this);
 
     // activity intent request response key
     public static final String RESULT_LIST_ACTIVITY_RESPONSE_KEY = "response_key";

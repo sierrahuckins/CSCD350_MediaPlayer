@@ -44,7 +44,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayAdapter<String> mAdapter;
 
     //reference to app's internal database
-    private LibraryDatabase mDB = new LibraryDatabase(this);
+    private ISQLite mDB = new LibraryDatabase(this);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

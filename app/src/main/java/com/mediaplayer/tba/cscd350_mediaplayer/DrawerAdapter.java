@@ -21,6 +21,7 @@ public class DrawerAdapter extends ArrayAdapter<DrawerItem> {
     private Context mContext;
     private DrawerItem[] mDrawerItems;
 
+    //constructor
     public DrawerAdapter(Context context, int resourceId, DrawerItem[] drawerItems) {
         super(context, resourceId, drawerItems);
 

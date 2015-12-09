@@ -161,11 +161,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void showNotification() {
 
-
-//        // for launch app on click
-//        Intent intent = new Intent(mContext, MainActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 1, intent, 0);
-
         if(mNotificationManager == null) {
             mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         }

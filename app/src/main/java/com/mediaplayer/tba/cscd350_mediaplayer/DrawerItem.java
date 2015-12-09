@@ -4,8 +4,9 @@ package com.mediaplayer.tba.cscd350_mediaplayer;
  * DrawerItem.java
  * Author: Bruce Emehiser
  * Date: 20151012
- * Description: Drawer items for navigation drawer resources (wrapper class)
+ * Description: Drawer items for display in navigation drawer (wrapper class)
  */
+
 public class DrawerItem {
 
     private int mIconId;

@@ -11,11 +11,11 @@ import android.widget.EditText;
  * MusicPlayerDialog.java
  * Author: Bruce Emehiser
  * Date: 20151203
- * Description: Dialog boxes for Music Player
+ * Description: Static dialog boxes that can be displayed by the MusicPlayer class.
  */
 public class MusicPlayerDialog {
 
-    public static void addNewPlaylistDialog(final Context context, final LibraryDatabase db, final MediaFile[] toAdd) {
+    public static void addNewPlaylistDialog(final Context context, final ISQLite db, final MediaFile[] toAdd) {
 
         if(toAdd == null) {
             throw new NullPointerException("toAdd is null in addNewPlaylistDialog");
@@ -53,7 +53,7 @@ public class MusicPlayerDialog {
         builder.show();
     }
 
-    public static void selectPlaylistDialog(final Context context, final LibraryDatabase db, final MediaFile toAdd) {
+    public static void selectPlaylistDialog(final Context context, final ISQLite db, final MediaFile toAdd) {
 
         // make array of single file
         MediaFile[] mediaFiles = new MediaFile[] {toAdd};
@@ -61,7 +61,7 @@ public class MusicPlayerDialog {
         selectPlaylistDialog(context, db, mediaFiles);
     }
 
-    public static void selectPlaylistDialog(final Context context, final LibraryDatabase db, final MediaFile[] toAdd) {
+    public static void selectPlaylistDialog(final Context context, final ISQLite db, final MediaFile[] toAdd) {
 
         if(toAdd == null) {
             Log.e("TAG", "toAdd is null in selectPlaylistDialog");
@@ -100,7 +100,7 @@ public class MusicPlayerDialog {
         builder.show();
     }
 
-    public static void removePlaylistDialog(final Context context, final LibraryDatabase db, final String playlist) {
+    public static void removePlaylistDialog(final Context context, final ISQLite db, final String playlist) {
 
         // build a new dialog box for choosing which playlist to add the item(s) to
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
