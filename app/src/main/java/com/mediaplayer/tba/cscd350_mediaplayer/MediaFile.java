@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Date: 20151102
  * Description: Wrapper for data which describes a media file
  * Revision 1
- * Rev. Author: Andrew Macey
+ * Rev. Author: Andrew Macy
  * Date: 20151107
  * Description: Edited getters to account for null strings
  */

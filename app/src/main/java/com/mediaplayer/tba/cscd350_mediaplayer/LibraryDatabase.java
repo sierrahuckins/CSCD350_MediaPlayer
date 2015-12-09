@@ -73,7 +73,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
             result = db.insert(LIBRARY_TABLE, null, contentValues) != -1;
         }
         catch(SQLiteConstraintException e){
-            return false; //item already in database
+            return false;
         }
 
         return result;
@@ -299,7 +299,7 @@ public class LibraryDatabase extends SQLiteOpenHelper implements ISQLite{
         String table = LIBRARY_TABLE;
         String[] columnsToReturn = { "*" };
         String selection = "(\"" + TITLE + "\" || \"" + ARTIST + "\" || \"" + ALBUM + "\" || \"" + GENRE + "\") LIKE ?";
-        String[] selectionArgs = { "%" + search + "%" }; // matched to "?" in selection
+        String[] selectionArgs = { "%" + search + "%"}; // matched to "?" in selection
         Cursor cursor = db.query(table, columnsToReturn, selection, selectionArgs, null, null, null);
 
         return constructMediaFileResults(cursor);
